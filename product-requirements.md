@@ -32,7 +32,8 @@ Below is a **user story–driven** list of requirements. Each row highlights a s
 | **User Authentication**     | As a user, I want to be able to create and log into an account, so I can have full access to the app's features. | Must Have | |
 | **User Guest Mode**         | As a user, I want to be able to use the app without an account, so I can access the app's basic features. | Should Have | |
 | **Account Profile**         | As a user, I want to be able to check my personal account, so that I can view my progress | Must Have  | |
-| **Leveling System**         | As a user, I want to be able to visually keep track of the progress I've made, so that time spent on the app feels meaningful  | Must Have  | |
+| **Leveling System**         | As a user, I want to be able to visually keep track of the EXP I've gathered and my account's level, so that time spent on the app feels meaningful  | Must Have  | |
+| **Skill Tree**         | As a user, I want to be able to visually keep track of the progress I've made in regards to different skills, so that time spent on the app feels meaningful  | Should Have  | |
 | **Guides and Tools**        | As a user, I want to be able to access guides and tools for different mHealth topics, so that I can passivly increase my knowledge on them | Must Have  | |
 | **Personalized Activities** | As a user, I want to participate in mental health challenges based on my goals, so I can improve my well-being step by step. | Should Have  | |
 | **Mood Tracking**           | As a user, As a user, I want to log my mood daily, so I can track my emotional well-being over time. | Should Have  | |
@@ -49,7 +50,7 @@ Below is a **user story–driven** list of requirements. Each row highlights a s
 
 ## **Design Notes & Wireframes**
 
-[Figma link](#)
+[Figma link](https://www.figma.com/design/okqBk8mofd6xbvUDgklNg9/MentalPotionUI?node-id=0-1&t=K3L3YPZoytjD3FR2-1)
 
 ---
 
