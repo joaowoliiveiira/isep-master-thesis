@@ -23,7 +23,7 @@ The current dissertation aims to explore the design and implementation process o
 
 ---
 
-## **Requirements**
+## **Functional Requirements**
 
 Below is a **user story–driven** list of requirements. Each row highlights a specific feature or user story, along with its priority, acceptance criteria, and additional notes.
 
