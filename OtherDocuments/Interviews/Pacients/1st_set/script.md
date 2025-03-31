@@ -1,4 +1,4 @@
-# PAtients Interview Script
+# Patients Interview Script
 *Patients, while also stakeholders, differ from Users in that they will be using the platform at the suggestion of their therapists. They will have medium power and interest in the platform, a consequence of this self-help tool not being intended to replace traditional therapy or medical treatments, but rather to assist users in their daily tasks in between therapy sessions.*
 
 ## **General Experience & Expectations**
