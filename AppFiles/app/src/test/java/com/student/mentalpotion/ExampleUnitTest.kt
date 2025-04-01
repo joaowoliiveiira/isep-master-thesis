@@ -1,4 +1,4 @@
-package com.thesis.mentalpotion
+package com.student.mentalpotion
 
 import org.junit.Test
 
