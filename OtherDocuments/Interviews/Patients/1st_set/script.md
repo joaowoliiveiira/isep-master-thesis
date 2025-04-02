@@ -1,14 +1,15 @@
-# Common Users (Target Audience) Interview Script
-*Common Users represent the target audience of the project. The platform will be developed specifically to meet their needs, making them stakeholders with a high interest in the final product. However, they will have medium power over the platform's design, as their feedback might be biased and not always scientifically accurate*
+# Patients Interview Script
+*Patients, while also stakeholders, differ from Users in that they either will be using the platform at the suggestion of their therapist, or are currently accompanied by a professional unrelated to the app. They will have medium power and interest in the platform, a consequence of this self-help tool not being intended to replace traditional therapy or medical treatments, but rather to assist users in their daily tasks in between therapy sessions.*
 
 ## **General Experience & Expectations**
-- Have you struggled with some sort of mental health related issue in the last decade? If so, which issues?
-- Have you ever though about seeking professional help?
+- What mental health issues have you been struggling with within the last 10 years?
+- For how long have you been accompanied by a professional in the area?
+- Did you seek professional help on your own volition?
 - Have you ever used a mental health or self-improvement app?
 
 | If yes | If no  |
 | ------ | ------ | 
-| - What apps have you used? | - Would you have interest in trying one? Why so?
+| - What apps have you used? | - Would you be interested in using one? Why so?
 | - What do you like or dislike about these apps? | - What would you like or dislike to find in one of these apps? |
 
 - What features would make you want to continue using an app like this?

@@ -2,6 +2,7 @@
 *Psychologists and Psychiatrists are key stakeholders. They possess significant expertise and are expected to have high power over the platform's features. Their insights are crucial as they can use the platform as a complementary (but not alternative) tool to support their patients and the broader population.*
 
 ## Professional Experience
+- How long have you worked in the area of mental health? 
 - What seem to be the biggest obstacles clients usually face on their day to day life?
 - What are the most common topics aboarded during therapy?
 - What is usually the first step you take when meeting a new client?
