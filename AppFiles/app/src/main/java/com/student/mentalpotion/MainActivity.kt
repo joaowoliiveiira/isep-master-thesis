@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MentalPotionTheme {
                 Surface {
-                    ProfileScreen()
+                    LoginScreen()
                 }
             }
         }
@@ -28,5 +28,5 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    ProfileScreen()
+    LoginScreen()
 }
