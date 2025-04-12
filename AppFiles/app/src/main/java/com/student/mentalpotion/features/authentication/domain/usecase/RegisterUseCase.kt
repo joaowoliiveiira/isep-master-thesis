@@ -5,10 +5,10 @@ import com.student.mentalpotion.features.authentication.domain.model.NetworkErro
 import com.student.mentalpotion.features.authentication.domain.model.User
 import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
 
-class LoginUseCase(
+class RegisterUseCase(
     private val repository: AuthenticationRepository
 ) {
     suspend operator fun invoke(email: String, password: String): Either<NetworkError, User> {
-        return repository.login(email, password)
+        return repository.register(email, password)
     }
 }
