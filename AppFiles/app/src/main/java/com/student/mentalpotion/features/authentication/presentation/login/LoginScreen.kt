@@ -5,23 +5,33 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.student.mentalpotion.features.authentication.domain.model.User
+
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    viewModel: LoginViewModel = hiltViewModel(),
+    onLoginSuccess: (User) -> Unit
+) {
+    val uiState = viewModel.uiState
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Placeholder for Logo
+        // Placeholder Logo
         Box(
             modifier = Modifier
                 .size(150.dp)
@@ -35,16 +45,18 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Username & Password Fields
         OutlinedTextField(
-            value = "", onValueChange = {},
+            value = viewModel.email,
+            onValueChange = { viewModel.email = it },
             placeholder = { Text("Username") },
             modifier = Modifier.fillMaxWidth(0.8f)
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
-            value = "", onValueChange = {},
+            value = viewModel.password,
+            onValueChange = { viewModel.password = it },
             placeholder = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(0.8f)
         )
 
@@ -56,9 +68,8 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sign In Button
         Button(
-            onClick = {},
+            onClick = { viewModel.onLoginClick() },
             modifier = Modifier.fillMaxWidth(0.6f),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
         ) {
@@ -69,13 +80,27 @@ fun LoginScreen() {
         Text("or")
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Guest Mode Button
         Button(
-            onClick = {},
+            onClick = { /* Handle guest mode */ },
             modifier = Modifier.fillMaxWidth(0.6f),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
         ) {
             Text("Guest Mode", color = Color.White)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        when (uiState) {
+            is LoginUiState.Loading -> CircularProgressIndicator()
+            is LoginUiState.Error -> Text(
+                text = uiState.message,
+                color = MaterialTheme.colorScheme.error
+            )
+            is LoginUiState.Success -> LaunchedEffect(Unit) {
+                onLoginSuccess(uiState.user)
+                viewModel.resetUiState()
+            }
+            else -> {}
         }
     }
 }
