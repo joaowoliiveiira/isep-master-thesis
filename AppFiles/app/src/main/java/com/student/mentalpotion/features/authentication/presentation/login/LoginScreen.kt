@@ -16,13 +16,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.student.mentalpotion.features.authentication.domain.model.User
+import com.student.mentalpotion.features.authentication.presentation.navigation.AuthenticationDestinations
 
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onLoginSuccess: (User) -> Unit
+    onLoginSuccess: (User) -> Unit,
+    navController: NavHostController
 ) {
     val uiState = viewModel.uiState
 
@@ -64,7 +67,11 @@ fun LoginScreen(
 
         // Sign Up Prompt
         Text("New User?", fontSize = 14.sp)
-        Text("Sign Up", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Blue)
+        TextButton(onClick = {
+            navController.navigate(AuthenticationDestinations.Register.route)
+        }) {
+            Text("Sign Up")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
