@@ -9,8 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
+import com.student.mentalpotion.features.authentication.presentation.login.LoginScreen
 import com.student.mentalpotion.features.authentication.presentation.navigation.AuthenticationDestinations
-import com.student.mentalpotion.features.authentication.presentation.navigation.AuthenticationNavGraph
 import com.student.mentalpotion.ui.HomeScreen
 import com.student.mentalpotion.ui.theme.MentalPotionTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,10 +38,9 @@ fun AppNavHost(navController: NavHostController) {
         navController = navController,
         startDestination = AuthenticationDestinations.Login.route
     ) {
-        // Auth flow
+        // Directly call composables here — no nested NavHost
         composable(AuthenticationDestinations.Login.route) {
-            AuthenticationNavGraph(
-                navController = navController,
+            LoginScreen(
                 onLoginSuccess = {
                     navController.navigate(AuthenticationDestinations.Home.route) {
                         popUpTo(AuthenticationDestinations.Login.route) { inclusive = true }
@@ -50,7 +49,6 @@ fun AppNavHost(navController: NavHostController) {
             )
         }
 
-        // Home screen
         composable(AuthenticationDestinations.Home.route) {
             HomeScreen()
         }

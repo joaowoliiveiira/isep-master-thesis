@@ -3,7 +3,10 @@ package com.student.mentalpotion.features.authentication.di
 import com.google.firebase.auth.FirebaseAuth
 import com.student.mentalpotion.features.authentication.data.repository.AuthenticationRepoImpl
 import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
+import com.student.mentalpotion.features.authentication.domain.usecase.GetCurrentUserUseCase
 import com.student.mentalpotion.features.authentication.domain.usecase.LoginUseCase
+import com.student.mentalpotion.features.authentication.domain.usecase.LogoutUseCase
+import com.student.mentalpotion.features.authentication.domain.usecase.RegisterUseCase
 import com.student.mentalpotion.features.authentication.service.FirebaseAuthService
 import com.student.mentalpotion.features.authentication.service.FirebaseAuthServiceImpl
 import dagger.Module
@@ -36,4 +39,19 @@ object AuthModule {
     fun provideLoginUseCase(
         repository: AuthenticationRepository
     ) = LoginUseCase(repository)
+
+    @Provides
+    fun provideRegisterUseCase(
+        repository: AuthenticationRepository
+    ) = RegisterUseCase(repository)
+
+    @Provides
+    fun provideLogoutUseCase(
+        repository: AuthenticationRepository
+    ) = LogoutUseCase(repository)
+
+    @Provides
+    fun provideGetCurrentUserUseCase(
+        repository: AuthenticationRepository
+    ) = GetCurrentUserUseCase(repository)
 }

@@ -1,11 +1,13 @@
 package com.student.mentalpotion.features.authentication.presentation.navigation
 
+/*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.student.mentalpotion.features.authentication.domain.model.User
 import com.student.mentalpotion.features.authentication.presentation.login.LoginScreen
+
 
 @Composable
 fun AuthenticationNavGraph (
@@ -28,4 +30,4 @@ fun AuthenticationNavGraph (
         //     RegisterScreen(...)
         // }
     }
-}
+}*/
