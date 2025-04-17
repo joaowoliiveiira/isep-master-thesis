@@ -11,14 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.student.mentalpotion.features.authentication.domain.model.User
-import com.student.mentalpotion.features.authentication.presentation.navigation.AuthenticationDestinations
+import com.student.mentalpotion.core.navigation.AppDestinations
 
 
 @Composable
@@ -68,7 +67,7 @@ fun LoginScreen(
         // Sign Up Prompt
         Text("New User?", fontSize = 14.sp)
         TextButton(onClick = {
-            navController.navigate(AuthenticationDestinations.Register.route)
+            navController.navigate(AppDestinations.Register.route)
         }) {
             Text("Sign Up")
         }
