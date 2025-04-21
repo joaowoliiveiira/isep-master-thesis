@@ -16,6 +16,7 @@ sealed class AppDestinations(
     object Profile : AppDestinations("profile", "Profile", Icons.Default.Person)
 
     // Auth
+    object Landing : AppDestinations("landing")
     object Login : AppDestinations("login")
     object Register : AppDestinations("register")
 

@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.student.mentalpotion.features.authentication.presentation.login.LoginScreen
 import com.student.mentalpotion.core.navigation.AppDestinations
+import com.student.mentalpotion.features.authentication.presentation.login.LandingScreen
 import com.student.mentalpotion.features.authentication.presentation.signup.RegisterScreen
 import com.student.mentalpotion.ui.HomeScreen
 import com.student.mentalpotion.ui.components.BottomNavBar
@@ -26,11 +27,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MentalPotionTheme {
-                // navController for switching between screens
                 val navController = rememberNavController()
 
                 Surface(modifier = Modifier) {
-                    LoginNavHost(navController = navController)
+                    AppNavHost(navController = navController)
                 }
             }
         }
@@ -38,20 +38,23 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * NavHost for the screens "outside" of the authentication.
- *
+ * AppNavHost manages both authentication flow and main app flow.
  */
 @Composable
-fun LoginNavHost(navController: NavHostController) {
-
+fun AppNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = AppDestinations.Login.route
+        startDestination = AppDestinations.Landing.route // Or Login if you prefer
     ) {
-        // Directly call the screen composables here
+        composable(AppDestinations.Landing.route) {
+            LandingScreen(
+                navController = navController
+            )
+        }
+
         composable(AppDestinations.Login.route) {
             LoginScreen(
-                onLoginSuccess = {
+                onLoginSuccess = { user ->
                     navController.navigate(AppDestinations.Home.route) {
                         popUpTo(AppDestinations.Login.route) { inclusive = true }
                     }
@@ -76,25 +79,26 @@ fun LoginNavHost(navController: NavHostController) {
         }
 
         composable(AppDestinations.Home.route) {
-            MainScaffold()
+            MainScaffold(navController = navController)
         }
     }
 }
 
 /**
- * NavHost for the screens "inside" the app, after the authentication.
- *
+ * MainScaffold manages the bottom bar and main in-app screens.
  */
 @Composable
-fun MainScaffold() {
-    val navController = rememberNavController()
-
+fun MainScaffold(navController: NavHostController) {
     Scaffold(
         bottomBar = {
             BottomNavBar(
                 navController = navController,
-                onItemClick = {
-                    navController.navigate(it.route)
+                onItemClick = { destination ->
+                    navController.navigate(destination.route) {
+                        // Avoid duplicating same destination in backstack
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
             )
         }
@@ -107,7 +111,9 @@ fun MainScaffold() {
             composable(AppDestinations.Home.route) {
                 HomeScreen()
             }
-/*
+
+            // Uncomment when ready
+            /*
             composable(AppDestinations.Activities.route) {
                 ActivitiesScreen()
             }
@@ -115,9 +121,7 @@ fun MainScaffold() {
             composable(AppDestinations.Profile.route) {
                 ProfileScreen()
             }
-
- */
+            */
         }
     }
 }
-
