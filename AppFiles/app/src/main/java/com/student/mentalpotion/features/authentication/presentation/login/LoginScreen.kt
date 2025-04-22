@@ -2,8 +2,11 @@ package com.student.mentalpotion.features.authentication.presentation.login
 
 import androidx.compose.material3.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -11,102 +14,166 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.student.mentalpotion.features.authentication.domain.model.User
 import com.student.mentalpotion.core.navigation.AppDestinations
-
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: (User) -> Unit,
-    navController: NavHostController
+    navController: NavController,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val uiState = viewModel.uiState
+    val loginState = viewModel.loginState
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    LaunchedEffect(loginState) {
+        if (loginState is LoginUiState.Success) {
+            onLoginSuccess(loginState.user)
+            viewModel.resetUiState()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF161118))
+            .padding(horizontal = 21.dp)
+            .padding(top = 25.dp, bottom = 67.dp)
     ) {
-        // Placeholder Logo
-        Box(
-            modifier = Modifier
-                .size(150.dp)
-                .clip(RoundedCornerShape(8.dp))
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                painter = painterResource(id = android.R.drawable.ic_menu_gallery),
-                contentDescription = "App Logo"
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "Login",
+                    fontSize = 30.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "New to MentalPotion?",
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "Register",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable {
+                            navController.navigate(AppDestinations.Register.route)
+                        }
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                OutlinedTextField(
+                    value = viewModel.email,
+                    onValueChange = { viewModel.email = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("E-mail") },
+                    /*
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = Color.White,
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color(0xFFD9D9D9)
+                    ),*/
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = viewModel.password,
+                    onValueChange = { viewModel.password = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    /*
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = Color.White,
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color(0xFFD9D9D9)
+                    ),*/
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    singleLine = true
+                )
+
+                Text(
+                    text = "Forgot your password?",
+                    fontSize = 14.sp,
+                    color = Color.White,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .clickable {
+                            // TODO: Navigate to ForgotPassword screen later
+                        }
+                )
+            }
+
+            Button(
+                onClick = { viewModel.onLoginClick() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(55.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0x26D9D9D9),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "Login", fontSize = 20.sp)
+            }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        OutlinedTextField(
-            value = viewModel.email,
-            onValueChange = { viewModel.email = it },
-            placeholder = { Text("Username") },
-            modifier = Modifier.fillMaxWidth(0.8f)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = viewModel.password,
-            onValueChange = { viewModel.password = it },
-            placeholder = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(0.8f)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Sign Up Prompt
-        Text("New User?", fontSize = 14.sp)
-        TextButton(onClick = {
-            navController.navigate(AppDestinations.Register.route)
-        }) {
-            Text("Sign Up")
+        if (loginState is LoginUiState.Loading) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color.White)
+            }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { viewModel.onLoginClick() },
-            modifier = Modifier.fillMaxWidth(0.6f),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-        ) {
-            Text("Sign In", color = Color.White)
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("or")
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = { /* Handle guest mode */ },
-            modifier = Modifier.fillMaxWidth(0.6f),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-        ) {
-            Text("Guest Mode", color = Color.White)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        when (uiState) {
-            is LoginUiState.Loading -> CircularProgressIndicator()
-            is LoginUiState.Error -> Text(
-                text = uiState.message,
-                color = MaterialTheme.colorScheme.error
-            )
-            is LoginUiState.Success -> LaunchedEffect(Unit) {
-                onLoginSuccess(uiState.user)
+        if (loginState is LoginUiState.Error) {
+            LaunchedEffect(Unit) {
+                delay(100)
+                SnackbarHostState().showSnackbar(loginState.message)
                 viewModel.resetUiState()
             }
-            else -> {}
         }
     }
 }

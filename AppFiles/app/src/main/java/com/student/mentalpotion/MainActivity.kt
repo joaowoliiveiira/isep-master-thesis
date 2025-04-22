@@ -9,11 +9,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.student.mentalpotion.features.authentication.presentation.login.LoginScreen
 import com.student.mentalpotion.core.navigation.AppDestinations
 import com.student.mentalpotion.features.authentication.presentation.login.LandingScreen
+import com.student.mentalpotion.features.authentication.presentation.login.LoginViewModel
 import com.student.mentalpotion.features.authentication.presentation.signup.RegisterScreen
 import com.student.mentalpotion.ui.HomeScreen
 import com.student.mentalpotion.ui.components.BottomNavBar
@@ -44,7 +46,8 @@ class MainActivity : ComponentActivity() {
 fun AppNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = AppDestinations.Landing.route // Or Login if you prefer
+        // First screen to appear when opening
+        startDestination = AppDestinations.Landing.route
     ) {
         composable(AppDestinations.Landing.route) {
             LandingScreen(
@@ -53,13 +56,16 @@ fun AppNavHost(navController: NavHostController) {
         }
 
         composable(AppDestinations.Login.route) {
+            val viewModel: LoginViewModel = hiltViewModel()
+
             LoginScreen(
                 onLoginSuccess = { user ->
                     navController.navigate(AppDestinations.Home.route) {
                         popUpTo(AppDestinations.Login.route) { inclusive = true }
                     }
                 },
-                navController = navController
+                navController = navController,
+                viewModel = viewModel
             )
         }
 
