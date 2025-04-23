@@ -8,7 +8,13 @@ val White = Color(0xFFFFFFFF)
 val Gray = Color(0xFFD9D9D9)
 
 
-
+val CrisisRed = Color(0xFF7F0000)
+val CrisisRedHover = Color(0xFF960000)
+val GoldenText = Color(0xFFE8C59C)
+val SubtleGold = Color(0xFFCAA982)
+val DarkBackground = Color(0xFF161118)
+val TransparentDark = Color(0xB3000000)
+val BorderColor = Color(0xFFD9D9D9)
 
 val greenBackground = Color(0xFF119B00)
 

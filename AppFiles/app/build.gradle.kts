@@ -83,6 +83,8 @@ dependencies {
 
     testImplementation(libs.junit)
 
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
     // Arrow
     implementation("io.arrow-kt:arrow-core:2.0.1")
     implementation("io.arrow-kt:arrow-fx-coroutines:2.0.1")

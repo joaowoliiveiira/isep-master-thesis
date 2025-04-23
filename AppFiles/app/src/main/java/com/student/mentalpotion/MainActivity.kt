@@ -17,7 +17,7 @@ import com.student.mentalpotion.core.navigation.AppDestinations
 import com.student.mentalpotion.features.authentication.presentation.login.LandingScreen
 import com.student.mentalpotion.features.authentication.presentation.login.LoginViewModel
 import com.student.mentalpotion.features.authentication.presentation.signup.RegisterScreen
-import com.student.mentalpotion.ui.HomeScreen
+import com.student.mentalpotion.features.home.presentation.home.HomeScreen
 import com.student.mentalpotion.ui.components.BottomNavBar
 import com.student.mentalpotion.ui.theme.MentalPotionTheme
 import dagger.hilt.android.AndroidEntryPoint
