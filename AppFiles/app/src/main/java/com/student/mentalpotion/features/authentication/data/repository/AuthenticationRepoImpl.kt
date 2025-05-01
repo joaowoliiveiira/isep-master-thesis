@@ -4,7 +4,7 @@ import arrow.core.Either
 import com.student.mentalpotion.features.authentication.domain.model.NetworkError
 import com.student.mentalpotion.features.authentication.domain.model.User
 import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
-import com.student.mentalpotion.features.authentication.service.FirebaseAuthService
+import com.student.mentalpotion.features.authentication.data.service.FirebaseAuthService
 
 class AuthenticationRepoImpl (
     private val authService: FirebaseAuthService

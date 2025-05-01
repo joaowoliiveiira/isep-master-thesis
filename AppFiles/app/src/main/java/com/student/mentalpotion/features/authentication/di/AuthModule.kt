@@ -7,8 +7,8 @@ import com.student.mentalpotion.features.authentication.domain.usecase.GetCurren
 import com.student.mentalpotion.features.authentication.domain.usecase.LoginUseCase
 import com.student.mentalpotion.features.authentication.domain.usecase.LogoutUseCase
 import com.student.mentalpotion.features.authentication.domain.usecase.RegisterUseCase
-import com.student.mentalpotion.features.authentication.service.FirebaseAuthService
-import com.student.mentalpotion.features.authentication.service.FirebaseAuthServiceImpl
+import com.student.mentalpotion.features.authentication.data.service.FirebaseAuthService
+import com.student.mentalpotion.features.authentication.data.service.FirebaseAuthServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

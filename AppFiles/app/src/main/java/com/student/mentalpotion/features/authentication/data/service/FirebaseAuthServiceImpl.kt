@@ -1,4 +1,4 @@
-package com.student.mentalpotion.features.authentication.service
+package com.student.mentalpotion.features.authentication.data.service
 
 import arrow.core.Either
 import com.google.firebase.auth.FirebaseAuth
