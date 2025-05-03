@@ -43,6 +43,6 @@ object ActivityModule {
     fun provideGetActivityByIdUseCase(
         repository: ActivityRepository
     ) = GetActivityByIdUseCase(repository)
-    
+
      */
 }

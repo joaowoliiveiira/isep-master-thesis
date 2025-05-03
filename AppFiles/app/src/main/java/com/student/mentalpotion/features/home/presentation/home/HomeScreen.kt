@@ -11,30 +11,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.student.mentalpotion.ui.theme.*
+import androidx.hilt.navigation.compose.hiltViewModel
+
+import com.student.mentalpotion.R
 
 @Composable
-fun HomeScreen() {
-    var activeTab by remember { mutableStateOf("overall") }
-    val selectedDays = remember { mutableStateOf(setOf<String>()) }
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val selectedTab by viewModel.selectedTab.collectAsState()
+    val selectedTool by viewModel.selectedTool.collectAsState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF161118))
     ) {
-        // Background Image
+        // Background image
         Image(
-            painter = rememberAsyncImagePainter("https://cdn.builder.io/api/v1/image/assets/afcabc172fef4306a6dd382c946ab92b/5985508b611f2b92a82c48caa43d0a7c1363d88d?placeholderIfAbsent=true"),
-            contentDescription = "Background",
+            painter = painterResource(id = R.drawable.screenshot_32),
+            contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
@@ -42,88 +44,73 @@ fun HomeScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TopBar()
+            ProfileHeader()
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TabSection(
-                activeTab = activeTab,
-                onTabSelected = { activeTab = it }
+            TabNavigation(
+                selectedTab = selectedTab,
+                onTabSelected = viewModel::setSelectedTab
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            when (activeTab) {
-                "overall" -> OverallContent(selectedDays)
-                // "daily" -> DailyRoutineContent() // (Future)
+            when (selectedTab) {
+                "overall" -> OverallContent(
+                    selectedTool = selectedTool,
+                    onToolSelected = viewModel::setSelectedTool
+                )
+                "daily" -> DailyContent()
             }
         }
     }
 }
 
 @Composable
-private fun TopBar() {
-    Row(
+private fun ProfileHeader() {
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(bottom = 20.dp),
+        color = Color(0xFF161118).copy(alpha = 0.7f),
+        shape = RoundedCornerShape(12.dp)
     ) {
-        // Profile Info
         Row(
+            modifier = Modifier.padding(15.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = rememberAsyncImagePainter("https://images.pexels.com/photos/2381069/pexels-photo-2381069.jpeg"),
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .border(2.dp, Color.White, CircleShape)
-                    .clickable { /* TODO: Go to profile */ }
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = "João Oliveira",
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .background(
-                        TransparentDark,
-                        RoundedCornerShape(12.dp)
-                    )
-                    .padding(horizontal = 12.dp, vertical = 4.dp)
-            )
-        }
-
-        // Crisis and Notifications
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Icon(
-                painter = rememberAsyncImagePainter("https://images.pexels.com/photos/7821343/pexels-photo-7821343.jpeg"),
-                contentDescription = "Notifications",
-                modifier = Modifier
-                    .size(28.dp)
-                    .clickable { /* TODO: Notifications */ }
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        "https://images.pexels.com/photos/2381069/pexels-photo-2381069.jpeg"
+                    ),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                )
+                Text(
+                    text = "João Oliveira",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
 
             Button(
-                onClick = { /* TODO: Crisis call */ },
-                colors = ButtonDefaults.buttonColors(containerColor = CrisisRed),
-                shape = RoundedCornerShape(16.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                onClick = { /* TODO: Crisis Button Action */ },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF7F0000)
+                ),
+                shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
-                    "Crisis",
-                    color = Color.White,
-                    style = MaterialTheme.typography.labelLarge
+                    text = "Crisis",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -131,174 +118,162 @@ private fun TopBar() {
 }
 
 @Composable
-private fun TabSection(activeTab: String, onTabSelected: (String) -> Unit) {
-    Surface(
-        color = TransparentDark,
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            TabButton(
-                title = "Overall View",
-                selected = activeTab == "overall",
-                onClick = { onTabSelected("overall") }
-            )
-            TabButton(
-                title = "Daily Routine",
-                selected = activeTab == "daily",
-                onClick = { onTabSelected("daily") }
-            )
-        }
-    }
-}
-
-@Composable
-private fun TabButton(title: String, selected: Boolean, onClick: () -> Unit) {
-    Text(
-        text = title,
-        modifier = Modifier
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        color = if (selected) GoldenText else SubtleGold,
-        style = MaterialTheme.typography.labelLarge,
-        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-        textAlign = TextAlign.Center
-    )
-}
-
-@Composable
-private fun OverallContent(selectedDays: MutableState<Set<String>>) {
+private fun TabNavigation(
+    selectedTab: String,
+    onTabSelected: (String) -> Unit
+) {
     Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        ActivityCard()
-        WeeklyRoutine(selectedDays)
-        FavoriteToolsSection()
-    }
-}
-
-@Composable
-private fun ActivityCard() {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = DarkBackground.copy(alpha = 0.9f)),
-        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
-            .clickable { /* TODO: Go to Activity */ }
+            .background(Color.Black.copy(alpha = 0.7f))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(
-                "Next Activity...",
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium
+            TabButton(
+                text = "Overall View",
+                selected = selectedTab == "overall",
+                onClick = { onTabSelected("overall") }
             )
-            Icon(
-                painter = rememberAsyncImagePainter("https://images.pexels.com/photos/4843911/pexels-photo-4843911.jpeg"),
-                contentDescription = "Activity Icon",
-                modifier = Modifier.size(24.dp)
+            TabButton(
+                text = "Daily routine",
+                selected = selectedTab == "daily",
+                onClick = { onTabSelected("daily") }
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .background(Color(0xFFCAA982).copy(alpha = 0.3f))
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(2.dp)
+                    .background(Color(0xFFE8C59C))
+                    .align(if (selectedTab == "overall") Alignment.CenterStart else Alignment.CenterEnd)
             )
         }
     }
 }
 
 @Composable
-private fun WeeklyRoutine(selectedDays: MutableState<Set<String>>) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = DarkBackground.copy(alpha = 0.9f)),
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp)
-        ) {
-            Text(
-                "Weekly Routine",
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                listOf("M", "T", "W", "T", "F", "S", "S").forEach { day ->
-                    DayCircle(
-                        label = day,
-                        selected = selectedDays.value.contains(day),
-                        onSelect = {
-                            selectedDays.value = selectedDays.value.toggle(day)
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun DayCircle(label: String, selected: Boolean, onSelect: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .border(2.dp, SubtleGold, CircleShape)
-            .background(if (selected) Color.Gray.copy(alpha = 0.5f) else Color.Transparent, CircleShape)
-            .clickable { onSelect() },
-        contentAlignment = Alignment.Center
-    ) {
+private fun TabButton(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    TextButton(onClick = onClick) {
         Text(
-            text = label,
-            color = SubtleGold,
-            style = MaterialTheme.typography.bodyMedium
+            text = text,
+            color = if (selected) Color(0xFFE8C59C) else Color(0xFFCAA982),
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            fontSize = 16.sp
         )
     }
 }
 
 @Composable
-private fun FavoriteToolsSection() {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        shape = RoundedCornerShape(16.dp),
+private fun OverallContent(
+    selectedTool: Int?,
+    onToolSelected: (Int?) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        NextActivityCard()
+
+        Spacer(modifier = Modifier.height(29.dp))
+
+        WeeklyRoutineCard()
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        FavoriteToolsCard(
+            selectedTool = selectedTool,
+            onToolSelected = onToolSelected
+        )
+    }
+}
+
+@Composable
+private fun NextActivityCard() {
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
-            .border(2.dp, BorderColor, RoundedCornerShape(16.dp))
+            .padding(horizontal = 20.dp)
+            .clickable { /* TODO */ },
+        shape = RoundedCornerShape(10.dp),
+        color = Color(0xFF161118).copy(alpha = 0.9f),
+        border = BorderStroke(2.dp, Color(0xFFD9D9D9))
     ) {
-        Column(
-            modifier = Modifier.padding(24.dp)
+        Box(
+            modifier = Modifier.padding(
+                start = 37.dp,
+                end = 16.dp,
+                top = 29.dp,
+                bottom = 28.dp
+            )
         ) {
             Text(
-                "Favourite Tools",
+                text = "Next Activity...",
                 color = Color.White,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
+                fontSize = 17.sp
+            )
+            Image(
+                painter = painterResource(id = R.drawable.screenshot_32),
+                contentDescription = "Next",
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .size(12.dp)
+                    .padding(top = 14.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun WeeklyRoutineCard() {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .clickable { /* TODO */ },
+        shape = RoundedCornerShape(10.dp),
+        color = Color(0xFF161118).copy(alpha = 0.9f),
+        border = BorderStroke(2.dp, Color(0xFFD9D9D9))
+    ) {
+        Column(
+            modifier = Modifier.padding(32.dp)
+        ) {
+            Text(
+                text = "Weekly routine",
+                color = Color.White,
+                fontSize = 17.sp
             )
 
+            Spacer(modifier = Modifier.height(54.dp))
+
             Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                repeat(3) {
+                repeat(7) {
                     Box(
                         modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f)
-                            .background(DarkBackground.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
-                            .border(2.dp, BorderColor, RoundedCornerShape(12.dp))
-                            .clickable { /* TODO: Go to Tool Detail */ }
+                            .size(33.dp)
+                            .border(2.dp, Color(0xFFCAA982), CircleShape)
                     )
                 }
             }
@@ -306,9 +281,76 @@ private fun FavoriteToolsSection() {
     }
 }
 
-/**
- * Extension function to toggle item in Set
-  */
-private fun Set<String>.toggle(item: String): Set<String> {
-    return if (contains(item)) minus(item) else plus(item)
+@Composable
+private fun FavoriteToolsCard(
+    selectedTool: Int?,
+    onToolSelected: (Int?) -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        shape = RoundedCornerShape(10.dp),
+        color = Color.Transparent,
+        border = BorderStroke(2.dp, Color(0xFFD9D9D9))
+    ) {
+        Column(
+            modifier = Modifier.padding(
+                horizontal = 13.dp,
+                vertical = 27.dp
+            )
+        ) {
+            Text(
+                text = "Favourite Tools",
+                color = Color.White,
+                fontSize = 17.sp,
+                modifier = Modifier.padding(start = 21.dp)
+            )
+
+            Spacer(modifier = Modifier.height(46.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                repeat(3) { index ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f)
+                            .background(
+                                if (selectedTool == index) Color(0xFF201B22).copy(alpha = 0.9f)
+                                else Color(0xFF161118).copy(alpha = 0.6f),
+                                RoundedCornerShape(10.dp)
+                            )
+                            .border(
+                                2.dp,
+                                if (selectedTool == index) Color(0xFFE8C59C)
+                                else Color(0xFFD9D9D9),
+                                RoundedCornerShape(10.dp)
+                            )
+                            .clickable {
+                                onToolSelected(if (selectedTool == index) null else index)
+                            }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DailyContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Daily Routine Content Here",
+            color = Color.White,
+            textAlign = TextAlign.Center
+        )
+    }
 }
