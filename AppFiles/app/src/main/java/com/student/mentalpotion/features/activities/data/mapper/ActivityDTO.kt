@@ -36,13 +36,4 @@ data class ActivityDTO(
             else -> throw IllegalArgumentException("Unknown activity type: $type")
         }
     }
-
-    fun toDto(): ActivityDTO = when (this) {
-        is TimerActivity -> ActivityDTO(
-            id, title, description, topicId, difficulty.name, "TIMER", durationMinutes, null
-        )
-        is PhotoActivity -> ActivityDTO(
-            id, title, description, topicId, difficulty.name, "PHOTO", null, prompt
-        )
-    }
 }

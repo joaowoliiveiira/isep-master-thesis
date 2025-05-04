@@ -6,7 +6,9 @@ val Purple525174 = Color(0xFF525174)
 val Purple161118 = Color(0xFF161118)
 val White = Color(0xFFFFFFFF)
 val Gray = Color(0xFFD9D9D9)
-
+val GoldenBorder = Color(0xFFCAA982)
+val TransparentWhite15 = Color(0x26FFFFFF)
+val Black = Color(0xFF000000)
 
 val CrisisRed = Color(0xFF7F0000)
 val CrisisRedHover = Color(0xFF960000)

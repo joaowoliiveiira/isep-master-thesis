@@ -8,7 +8,7 @@ import com.student.mentalpotion.features.profile.domain.repository.UserProfileRe
 class UpdateUserProfileUseCase(
     private val repository: UserProfileRepository
 ) {
-    suspend operator fun invoke(profile: UserProfile): Either<NetworkError, Unit> {
+    suspend operator fun invoke(profile: UserProfile): Either<NetworkError, UserProfile> {
         return repository.updateUserProfile(profile)
     }
 }
