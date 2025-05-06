@@ -1,6 +1,8 @@
 package com.student.mentalpotion.features.authentication.di
 
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.student.mentalpotion.features.authentication.data.repository.AuthenticationRepoImpl
 import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
 import com.student.mentalpotion.features.authentication.domain.usecase.GetCurrentUserUseCase
@@ -21,8 +23,7 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth =
-        FirebaseAuth.getInstance()
+    fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
 
     @Provides
     @Singleton

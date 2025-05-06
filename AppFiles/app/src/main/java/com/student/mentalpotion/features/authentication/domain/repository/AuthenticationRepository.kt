@@ -9,4 +9,5 @@ interface AuthenticationRepository {
     suspend fun register(email: String, password: String): Either<NetworkError, User>
     fun logout()
     fun getCurrentUser(): Either<Throwable, User>
+    suspend fun resetPassword(email: String): Either<NetworkError, Unit>
 }

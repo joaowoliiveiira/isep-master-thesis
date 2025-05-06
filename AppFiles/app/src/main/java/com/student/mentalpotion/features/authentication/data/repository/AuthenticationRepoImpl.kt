@@ -25,4 +25,8 @@ class AuthenticationRepoImpl (
     override fun getCurrentUser(): Either<Throwable, User> {
         return authService.getCurrentUser()
     }
+
+    override suspend fun resetPassword(email: String): Either<NetworkError, Unit> {
+        return authService.resetPassword(email)
+    }
 }
