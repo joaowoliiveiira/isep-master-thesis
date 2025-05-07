@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -14,6 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.student.mentalpotion.features.authentication.presentation.login.LoginScreen
 import com.student.mentalpotion.core.navigation.AppDestinations
+import com.student.mentalpotion.features.activities.presentation.topics.TopicListScreen
 import com.student.mentalpotion.features.authentication.presentation.login.LandingScreen
 import com.student.mentalpotion.features.authentication.presentation.login.LoginViewModel
 import com.student.mentalpotion.features.authentication.presentation.signup.RegisterScreen
@@ -29,79 +31,87 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MentalPotionTheme {
-                val navController = rememberNavController()
+                val rootNavController = rememberNavController()
 
-                Surface(modifier = Modifier) {
-                    AppNavHost(navController = navController)
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    RootNavHost(navController = rootNavController)
                 }
             }
         }
     }
 }
 
-/**
- * AppNavHost manages both authentication flow and main app flow.
- */
 @Composable
-fun AppNavHost(navController: NavHostController) {
+fun RootNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        // First screen to appear when opening
-        startDestination = AppDestinations.Landing.route
+        startDestination = "auth"
     ) {
-        composable(AppDestinations.Landing.route) {
-            LandingScreen(
-                navController = navController
-            )
+        // Navigation for "outside" of the app content
+        navigation(startDestination = AppDestinations.Landing.route, route = "auth") {
+            composable(AppDestinations.Landing.route) {
+                LandingScreen(navController)
+            }
+
+            composable(AppDestinations.Login.route) {
+                val viewModel: LoginViewModel = hiltViewModel()
+                LoginScreen(
+                    navController = navController,
+                    viewModel = viewModel,
+                    onLoginSuccess = {
+                        navController.navigate("main") {
+                            popUpTo("auth") { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            composable(AppDestinations.Register.route) {
+                RegisterScreen(
+                    onRegisterSuccess = {
+                        navController.navigate("main") {
+                            popUpTo("auth") { inclusive = true }
+                        }
+                    },
+                    onBackToLogin = {
+                        navController.popBackStack(AppDestinations.Login.route, false)
+                    }
+                )
+            }
         }
 
-        composable(AppDestinations.Login.route) {
-            val viewModel: LoginViewModel = hiltViewModel()
+        // Navigation for "inside" of the app content
+        navigation(startDestination = AppDestinations.Home.route, route = "main") {
+            composable(AppDestinations.Home.route) {
+                MainScaffold(startDestination = AppDestinations.Home.route, parentNavController = navController)
+            }
 
-            LoginScreen(
-                onLoginSuccess = { user ->
-                    navController.navigate(AppDestinations.Home.route) {
-                        popUpTo(AppDestinations.Login.route) { inclusive = true }
-                    }
-                },
-                navController = navController,
-                viewModel = viewModel
-            )
-        }
+            composable(AppDestinations.Topics.route) {
+                MainScaffold(startDestination = AppDestinations.Topics.route, parentNavController = navController)
+            }
 
-        composable(AppDestinations.Register.route) {
-            RegisterScreen(
-                onRegisterSuccess = { user ->
-                    navController.navigate(AppDestinations.Home.route) {
-                        popUpTo(AppDestinations.Register.route) { inclusive = true }
-                    }
-                },
-                onBackToLogin = {
-                    navController.navigate(AppDestinations.Login.route) {
-                        popUpTo(AppDestinations.Register.route) { inclusive = true }
-                    }
-                }
-            )
-        }
-
-        composable(AppDestinations.Home.route) {
-            MainScaffold(navController = navController)
+            // Add more main destinations here if needed
         }
     }
 }
+
 
 /**
  * MainScaffold manages the bottom bar and main in-app screens.
  */
 @Composable
-fun MainScaffold(navController: NavHostController) {
+fun MainScaffold(
+    startDestination: String,
+    parentNavController: NavHostController
+) {
+    val innerNavController = rememberNavController()
+
     Scaffold(
         bottomBar = {
             BottomNavBar(
-                navController = navController,
+                navController = innerNavController,
                 onItemClick = { destination ->
-                    navController.navigate(destination.route) {
-                        // Avoid duplicating same destination in backstack
+                    innerNavController.navigate(destination.route) {
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -110,20 +120,19 @@ fun MainScaffold(navController: NavHostController) {
         }
     ) { innerPadding ->
         NavHost(
-            navController = navController,
-            startDestination = AppDestinations.Home.route,
+            navController = innerNavController,
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(AppDestinations.Home.route) {
                 HomeScreen()
             }
 
-            // Uncomment when ready
-            /*
-            composable(AppDestinations.Activities.route) {
-                ActivitiesScreen()
+            composable(AppDestinations.Topics.route) {
+                TopicListScreen(navController = innerNavController)
             }
 
+            /*
             composable(AppDestinations.Profile.route) {
                 ProfileScreen()
             }

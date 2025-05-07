@@ -12,7 +12,7 @@ sealed class AppDestinations(
     val icon: ImageVector? = null
 ) {
     object Home : AppDestinations("home", "Home", Icons.Default.Home)
-    object Activities : AppDestinations("activities", "Activities", Icons.Default.List)
+    object Topics : AppDestinations("topics", "Topics", Icons.Default.List)
     object Profile : AppDestinations("profile", "Profile", Icons.Default.Person)
 
     // Auth
@@ -22,6 +22,6 @@ sealed class AppDestinations(
 
     // List of screens for the nav bar
     companion object {
-        val bottomBarItems = listOf(Home, Activities, Profile)
+        val bottomBarItems = listOf(Home, Topics, Profile)
     }
 }
