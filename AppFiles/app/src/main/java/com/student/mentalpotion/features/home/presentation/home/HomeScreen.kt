@@ -14,6 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -21,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 import com.student.mentalpotion.R
 
+@Preview
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
@@ -28,6 +30,7 @@ fun HomeScreen(
     val selectedTab by viewModel.selectedTab.collectAsState()
     val selectedTool by viewModel.selectedTool.collectAsState()
 
+    // Box for the content to reside
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -35,16 +38,17 @@ fun HomeScreen(
     ) {
         // Background image
         Image(
-            painter = painterResource(id = R.drawable.screenshot_32),
-            contentDescription = null,
+            painter = painterResource(id = R.drawable.background_2),
+            contentDescription = "Background Image",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
+        // Content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
+                .padding(bottom = 20.dp, top = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ProfileHeader()
@@ -70,8 +74,8 @@ private fun ProfileHeader() {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 20.dp),
-        color = Color(0xFF161118).copy(alpha = 0.7f),
+            .padding(20.dp),
+        color = Color(0xB3161118),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
@@ -84,16 +88,15 @@ private fun ProfileHeader() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(
-                        "https://images.pexels.com/photos/2381069/pexels-photo-2381069.jpeg"
-                    ),
+                    painterResource(id = R.drawable.default_profile),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .size(40.dp)
-                        .clip(CircleShape)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
                 Text(
-                    text = "João Oliveira",
+                    text = "Username",
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
@@ -125,8 +128,9 @@ private fun TabNavigation(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.7f))
+            .background(Color(0xB3000000))
     ) {
+        // Row of Tab Options
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -145,6 +149,7 @@ private fun TabNavigation(
             )
         }
 
+        // Box for the golden strip under the tabs (to see chosen tab)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -183,15 +188,20 @@ private fun TabButton(
     }
 }
 
+
 @Composable
 private fun OverallContent(
     selectedTool: Int?,
     onToolSelected: (Int?) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Content of the Tab
         NextActivityCard()
 
         Spacer(modifier = Modifier.height(29.dp))
@@ -212,7 +222,6 @@ private fun NextActivityCard() {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
             .clickable { /* TODO */ },
         shape = RoundedCornerShape(10.dp),
         color = Color(0xFF161118).copy(alpha = 0.9f),
@@ -232,7 +241,7 @@ private fun NextActivityCard() {
                 fontSize = 17.sp
             )
             Image(
-                painter = painterResource(id = R.drawable.screenshot_32),
+                painter = painterResource(id = R.drawable.background_2),
                 contentDescription = "Next",
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -248,7 +257,6 @@ private fun WeeklyRoutineCard() {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
             .clickable { /* TODO */ },
         shape = RoundedCornerShape(10.dp),
         color = Color(0xFF161118).copy(alpha = 0.9f),
@@ -288,8 +296,7 @@ private fun FavoriteToolsCard(
 ) {
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
         color = Color.Transparent,
         border = BorderStroke(2.dp, Color(0xFFD9D9D9))
@@ -344,6 +351,7 @@ private fun DailyContent() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {

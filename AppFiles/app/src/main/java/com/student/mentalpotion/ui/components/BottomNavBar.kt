@@ -12,6 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.student.mentalpotion.core.navigation.AppDestinations
+import com.student.mentalpotion.ui.theme.BackgroundDark
+import com.student.mentalpotion.ui.theme.GoldenBorder
 
 @Composable
 fun BottomNavBar(
@@ -24,7 +26,7 @@ fun BottomNavBar(
 
     NavigationBar(
         modifier = modifier,
-        //containerColor = Color.
+        containerColor = BackgroundDark,
         tonalElevation = 5.dp
     ) {
         // Set each item in the bar
@@ -36,7 +38,7 @@ fun BottomNavBar(
                 selected = selected,
                 onClick = { onItemClick(item) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.Green,
+                    selectedIconColor = GoldenBorder,
                     unselectedIconColor = Color.Gray
                 ),
                 icon = { item.icon?.let { Icon(it, contentDescription = item.label) } },

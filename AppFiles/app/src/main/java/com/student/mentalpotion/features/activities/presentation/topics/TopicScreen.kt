@@ -257,7 +257,7 @@ fun ResourceCard(label: String) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Icon(
-                painter = painterResource(id = R.drawable.screenshot_32),
+                painter = painterResource(id = R.drawable.background_2),
                 contentDescription = label,
                 tint = Color.White,
                 modifier = Modifier.size(40.dp)
