@@ -39,157 +39,173 @@ fun LoginScreen(
 ) {
     val loginState = viewModel.loginState
     var passwordVisible by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(loginState) {
         if (loginState is LoginUiState.Success) {
             onLoginSuccess(loginState.user)
             viewModel.resetUiState()
+        } else if (loginState is LoginUiState.Error) {
+            snackbarHostState.showSnackbar(loginState.message)
+            viewModel.resetUiState()
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF161118))
-            .padding(horizontal = 21.dp)
-            .padding(top = 25.dp, bottom = 67.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = Color(0xFF7F0000),
+                    contentColor = Color.White
+                )
+            } },
+        containerColor = Color(0xFF161118)
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF161118))
+                .padding(horizontal = 21.dp)
+                .padding(top = 25.dp, bottom = 67.dp)
         ) {
             Column(
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Headline
-                Text(
-                    text = "Login",
-                    fontSize = 30.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
-
-                // Register text
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    // Headline
                     Text(
-                        text = "New to MentalPotion?",
-                        fontSize = 16.sp,
-                        color = Color.White
+                        text = "Login",
+                        fontSize = 30.sp,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
                     )
+
+                    // Register text
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "New to MentalPotion?",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Register",
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                navController.navigate(AppDestinations.Register.route)
+                            }
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    // Email text field
+                    OutlinedTextField(
+                        value = viewModel.email,
+                        onValueChange = { viewModel.email = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("E-mail") },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next
+                        ),
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedTextColor = MaterialTheme.colorScheme.primary,
+                            focusedTextColor = MaterialTheme.colorScheme.primary,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        )
+                    )
+
+                    // Password text field
+                    OutlinedTextField(
+                        value = viewModel.password,
+                        onValueChange = { viewModel.password = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("Password") },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            val image = if (passwordVisible)
+                                Icons.Default.Visibility
+                            else
+                                Icons.Default.VisibilityOff
+
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                            focusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        )
+                    )
+
                     Text(
-                        text = "Register",
-                        fontSize = 16.sp,
+                        text = "Forgot your password?",
+                        fontSize = 14.sp,
                         color = Color.White,
                         textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            navController.navigate(AppDestinations.Register.route)
-                        }
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .clickable {
+                                // TODO: Navigate to ForgotPassword screen later
+                            }
                     )
+                }
+
+                Button(
+                    onClick = { viewModel.onLoginClick() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(55.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0x26D9D9D9),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "Login", fontSize = 20.sp)
                 }
             }
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                // Email text field
-                OutlinedTextField(
-                    value = viewModel.email,
-                    onValueChange = { viewModel.email = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("E-mail") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedTextColor = MaterialTheme.colorScheme.primary,
-                        focusedTextColor = MaterialTheme.colorScheme.primary,
-                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                        focusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                    )
-                )
-
-                // Password text field
-                OutlinedTextField(
-                    value = viewModel.password,
-                    onValueChange = { viewModel.password = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Password") },
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        val image = if (passwordVisible)
-                            Icons.Default.Visibility
-                        else
-                            Icons.Default.VisibilityOff
-
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                        focusedPlaceholderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                    )
-                )
-
-                Text(
-                    text = "Forgot your password?",
-                    fontSize = 14.sp,
-                    color = Color.White,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .clickable {
-                            // TODO: Navigate to ForgotPassword screen later
-                        }
-                )
+            if (loginState is LoginUiState.Loading) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                }
             }
 
-            Button(
-                onClick = { viewModel.onLoginClick() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(55.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0x26D9D9D9),
-                    contentColor = Color.White
-                )
-            ) {
-                Text(text = "Login", fontSize = 20.sp)
-            }
-        }
-
-        if (loginState is LoginUiState.Loading) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f)),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = Color.White)
-            }
-        }
-
-        if (loginState is LoginUiState.Error) {
-            LaunchedEffect(Unit) {
-                delay(100)
-                SnackbarHostState().showSnackbar(loginState.message)
-                viewModel.resetUiState()
+            if (loginState is LoginUiState.Error) {
+                LaunchedEffect(Unit) {
+                    delay(100)
+                    SnackbarHostState().showSnackbar(loginState.message)
+                    viewModel.resetUiState()
+                }
             }
         }
     }
