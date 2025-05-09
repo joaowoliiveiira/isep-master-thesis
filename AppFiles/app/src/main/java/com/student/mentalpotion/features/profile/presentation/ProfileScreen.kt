@@ -5,34 +5,29 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import com.student.mentalpotion.R
+
+/*
+for alignment questions https://stackoverflow.com/questions/70608914/android-jetpack-compose-trying-to-align-a-text-inside-a-box
+ */
 
 @Preview
 @Composable
@@ -47,7 +42,10 @@ fun ProfilePageV3() {
         )
 
         // Content
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
             ProfileSection()
             SchoolProgressSection()
             Spacer(modifier = Modifier.height(16.dp))
@@ -59,15 +57,29 @@ fun ProfilePageV3() {
 @Preview
 @Composable
 private fun ProfileSection() {
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        // Profile Pic
+        Box(
+            modifier = Modifier
+                .size(94.dp)
+                .border(2.dp, Color.White, CircleShape)
+                .background(Color.Black, CircleShape)
+                .zIndex(2f)
+                .align(Alignment.TopCenter)
+        ) { }
+
+        // Rest of the profile section
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 50.dp)
+                .padding(top = 30.dp)
+                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                 .zIndex(1f),
-            shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
-            color = Color(0xFF161118),
-            tonalElevation = 8.dp
+            shadowElevation = 8.dp,
+            color = Color(0xFF161118)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -75,11 +87,11 @@ private fun ProfileSection() {
             ) {
                 ProfileHeader()
                 UsernameBadge("Username")
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier
-                        .padding(vertical = 18.dp)
-                        .width(328.dp)
-                        .height(2.dp),
+                        .fillMaxWidth()
+                        .padding(top = 18.dp, start = 15.dp, end = 15.dp),
+                    thickness = 2.dp,
                     color = Color(0x99C1CCD6)
                 )
             }
@@ -93,23 +105,20 @@ private fun ProfileHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 35.dp, vertical = 10.dp),
+            .padding(horizontal = 30.dp, vertical = 20.dp)
+            .zIndex(2f),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Options png
         Image(
-            painter = painterResource(id = R.drawable.default_profile),
+            painter = painterResource(id = R.drawable.options_white),
             contentDescription = "Profile Icon",
-            modifier = Modifier.size(40.dp)
-        )
-
-        Box(
             modifier = Modifier
-                .size(94.dp)
-                .border(2.dp, Color.White, CircleShape)
-                .background(Color.Black, CircleShape)
+                .size(40.dp)
         )
 
+        // Emergency Button
         CrisisButton()
     }
 }
@@ -118,6 +127,7 @@ private fun ProfileHeader() {
 @Composable
 private fun CrisisButton() {
     Surface(
+        modifier = Modifier,
         shape = RoundedCornerShape(90.dp),
         color = Color(0xFF7F0000)
     ) {
