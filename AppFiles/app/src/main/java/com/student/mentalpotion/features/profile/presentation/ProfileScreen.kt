@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -287,15 +286,15 @@ private fun MoodGraph() {
             verticalArrangement = Arrangement.spacedBy(41.dp)
         ) {
             repeat(5) {
-                Divider(
-                    color = Color(0x66C1CCD6),
-                    thickness = 2.dp
+                HorizontalDivider(
+                    thickness = 2.dp,
+                    color = Color(0x66C1CCD6)
                 )
             }
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(top = 24.dp),
-                color = Color(0xFFC1CCD6),
-                thickness = 2.dp
+                thickness = 2.dp,
+                color = Color(0xFFC1CCD6)
             )
         }
     }
