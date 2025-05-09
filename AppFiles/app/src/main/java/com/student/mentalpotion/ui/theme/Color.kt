@@ -18,6 +18,14 @@ val BorderColor = Color(0xFFD9D9D9)
 val ToolSelectedBackground = Color(0xE6201B22)
 val ToolDefaultBackground = Color(0x99161118)
 
+// Profile
+val ProfileBackground = Color(0xFF161118)
+val ProfileBackgroundTransparent = Color(0x66161118)
+val DividerColor = Color(0x99C1CCD6)
+val MoodCircleBorder = Color(0xFFCAA982)
+val UsernameBackground = Color(0x80000000)
+
+
 val Purple200 = Color(0xFFBB86FC)
 val Purple500 = Color(0xFF6200EE)
 val Purple700 = Color(0xFF3700B3)

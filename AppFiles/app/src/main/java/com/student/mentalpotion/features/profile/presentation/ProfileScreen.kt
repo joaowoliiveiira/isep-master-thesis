@@ -20,98 +20,266 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
+import com.student.mentalpotion.R
+
+@Preview
 @Composable
-fun ProfileScreen() {
+fun ProfilePageV3() {
     Box(modifier = Modifier.fillMaxSize()) {
-
-        /*
-        // Banner Image
+        // Background
         Image(
-            painter = painterResource(id = android.R.drawable.screen_background_dark),
-            contentDescription = "Profile Banner",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-        )*/
-
-        // Top Right Crisis Button & Settings Icon
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.Top
-        ) {
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-            ) {
-                Text("Crisis", color = Color.White, fontSize = 14.sp)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = {}) {
-                Icon(
-                    painter = painterResource(id = android.R.drawable.ic_menu_manage),
-                    contentDescription = "Settings",
-                    tint = Color.White
-                )
-            }
-        }
-
-        // Profile Picture
-        Column(
+            painter = painterResource(id = R.drawable.background_2),
+            contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Offset for the banner
-            Spacer(modifier = Modifier.height(100.dp))
-            Image(
-                painter = painterResource(id = android.R.drawable.ic_menu_camera),
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(Color.Gray)
-            )
+            contentScale = ContentScale.Crop
+        )
+
+        // Content
+        Column(modifier = Modifier.fillMaxSize()) {
+            ProfileSection()
+            SchoolProgressSection()
+            Spacer(modifier = Modifier.height(16.dp))
+            MoodSummarySection()
         }
     }
 }
 
+@Preview
 @Composable
-fun TopBar(
-    name: String,
-    modifier: Modifier = Modifier
-) {
-    Row (
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround,
-        modifier = modifier
+private fun ProfileSection() {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 50.dp)
+                .zIndex(1f),
+            shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+            color = Color(0xFF161118),
+            tonalElevation = 8.dp
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ProfileHeader()
+                UsernameBadge("Username")
+                Divider(
+                    modifier = Modifier
+                        .padding(vertical = 18.dp)
+                        .width(328.dp)
+                        .height(2.dp),
+                    color = Color(0x99C1CCD6)
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ProfileHeader() {
+    Row(
+        modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 35.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Back",
-            tint = Color.Black,
-            modifier = Modifier.size(24.dp)
+        Image(
+            painter = painterResource(id = R.drawable.default_profile),
+            contentDescription = "Profile Icon",
+            modifier = Modifier.size(40.dp)
         )
+
+        Box(
+            modifier = Modifier
+                .size(94.dp)
+                .border(2.dp, Color.White, CircleShape)
+                .background(Color.Black, CircleShape)
+        )
+
+        CrisisButton()
+    }
+}
+
+@Preview
+@Composable
+private fun CrisisButton() {
+    Surface(
+        shape = RoundedCornerShape(90.dp),
+        color = Color(0xFF7F0000)
+    ) {
+        Text(
+            text = "Crisis",
+            color = Color.White,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp)
+        )
+    }
+}
+
+@Composable
+private fun UsernameBadge(name: String) {
+    Surface(
+        shape = RoundedCornerShape(90.dp),
+        color = Color(0x80000000)
+    ) {
         Text(
             text = name,
-            overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
+            color = Color.White,
+            fontSize = 17.sp,
+            modifier = Modifier.padding(horizontal = 55.dp, vertical = 12.dp)
         )
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Back",
-            tint = Color.Black,
-            modifier = Modifier.size(24.dp)
+    }
+}
+
+@Preview
+@Composable
+private fun SchoolProgressSection() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0x66161118))
+            .padding(vertical = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "School of Sleep",
+            color = Color.White,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.SemiBold
         )
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Back",
-            tint = Color.Black,
-            modifier = Modifier.size(24.dp)
+
+        Box(
+            modifier = Modifier
+                .padding(top = 9.dp)
+                .border(1.dp, Color.White, RoundedCornerShape(90.dp))
+                .background(Color(0x80000000), RoundedCornerShape(90.dp))
+                .padding(1.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(145.dp)
+                    .height(15.dp)
+                    .background(Color(0xE6FFFFFF), RoundedCornerShape(90.dp))
+            )
+        }
+
+        Image(
+            painter = painterResource(id = R.drawable.default_profile),
+            contentDescription = "School Icon",
+            modifier = Modifier
+                .size(129.dp)
+                .padding(top = 25.dp)
         )
+    }
+}
+
+@Preview
+@Composable
+private fun MoodSummarySection() {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF161118)),
+        shadowElevation = 8.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 19.dp)
+        ) {
+            Divider(
+                modifier = Modifier
+                    .width(328.dp)
+                    .height(2.dp),
+                color = Color(0x99C1CCD6)
+            )
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp),
+                shape = RoundedCornerShape(10.dp),
+                color = Color(0xCC161118)
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Text(
+                        text = "Mood Summary",
+                        color = Color.White,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    MoodGraph()
+
+                    Text(
+                        text = "3 4 5 6 7 8 9 10 11",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .padding(top = 16.dp, start = 30.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun MoodGraph() {
+    Row(
+        modifier = Modifier
+            .padding(top = 12.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        // Circles
+        Column(
+            modifier = Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            repeat(5) {
+                Box(
+                    modifier = Modifier
+                        .size(33.dp)
+                        .border(2.dp, Color(0xFFCAA982), CircleShape)
+                )
+            }
+        }
+
+        // Horizontal lines
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = 26.dp),
+            verticalArrangement = Arrangement.spacedBy(41.dp)
+        ) {
+            repeat(5) {
+                Divider(
+                    color = Color(0x66C1CCD6),
+                    thickness = 2.dp
+                )
+            }
+            Divider(
+                modifier = Modifier.padding(top = 24.dp),
+                color = Color(0xFFC1CCD6),
+                thickness = 2.dp
+            )
+        }
     }
 }

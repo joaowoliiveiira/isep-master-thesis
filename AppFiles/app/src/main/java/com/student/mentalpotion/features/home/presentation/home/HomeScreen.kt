@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import androidx.hilt.navigation.compose.hiltViewModel
-
 import com.student.mentalpotion.R
 
 @Preview
