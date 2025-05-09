@@ -45,10 +45,11 @@ fun ProfilePageV3() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(top = 35.dp)
         ) {
             ProfileSection()
             SchoolProgressSection()
-            Spacer(modifier = Modifier.height(16.dp))
+            //Spacer(modifier = Modifier.height(16.dp))
             MoodSummarySection()
         }
     }
@@ -166,6 +167,7 @@ private fun SchoolProgressSection() {
             .padding(vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Skill name
         Text(
             text = "School of Sleep",
             color = Color.White,
@@ -173,6 +175,7 @@ private fun SchoolProgressSection() {
             fontWeight = FontWeight.SemiBold
         )
 
+        // Skill Experience
         Box(
             modifier = Modifier
                 .padding(top = 9.dp)
@@ -188,6 +191,7 @@ private fun SchoolProgressSection() {
             )
         }
 
+        // Skill png
         Image(
             painter = painterResource(id = R.drawable.default_profile),
             contentDescription = "School Icon",
@@ -203,19 +207,22 @@ private fun SchoolProgressSection() {
 private fun MoodSummarySection() {
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF161118)),
-        shadowElevation = 8.dp
+            .fillMaxWidth(),
+        color = Color(0xFF161118),
+        //shadowElevation = 8.dp
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                //.fillMaxWidth()
+                .fillMaxSize()
                 .padding(horizontal = 19.dp)
         ) {
-            Divider(
+            // Visual divider
+            HorizontalDivider(
                 modifier = Modifier
-                    .width(328.dp)
-                    .height(2.dp),
+                    .fillMaxWidth()
+                    .padding(bottom = 18.dp, start = 15.dp, end = 15.dp),
+                thickness = 2.dp,
                 color = Color(0x99C1CCD6)
             )
 
