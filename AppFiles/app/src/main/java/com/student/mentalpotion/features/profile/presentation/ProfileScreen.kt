@@ -34,7 +34,7 @@ fun ProfilePageV3() {
     Box(modifier = Modifier.fillMaxSize()) {
         // Background
         Image(
-            painter = painterResource(id = R.drawable.background_2),
+            painter = painterResource(id = R.drawable.background_3),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

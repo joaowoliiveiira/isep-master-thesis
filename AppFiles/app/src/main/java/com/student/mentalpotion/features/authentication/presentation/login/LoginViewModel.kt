@@ -4,17 +4,20 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.student.mentalpotion.features.authentication.domain.model.User
 import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
 import com.student.mentalpotion.features.authentication.domain.usecase.LoginUseCase
 import com.student.mentalpotion.features.authentication.presentation.login.LoginUiState
 import com.student.mentalpotion.features.authentication.presentation.login.LoginUiState.*
+import com.student.mentalpotion.features.profile.domain.usecase.GetUserProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val getUserProfileUseCase: GetUserProfileUseCase
 ) : ViewModel() {
 
     var email by mutableStateOf("")
@@ -31,16 +34,27 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             loginState = LoginUiState.Loading
+
+            // When we acquire a result for the User
             when (val result = loginUseCase(email, password)) {
                 is Either.Right -> {
-                    loginState = Success(result.value)
-                }
-                is Either.Left -> {
-                    loginState = Error(result.value.error.message)
+                    val user = result.value
+
+                    // When we acquire a result for the UserProfile, might use it later :D
+                    when (val profileResult = getUserProfileUseCase(user.id)) {
+                        is Either.Right -> {
+                            loginState = LoginUiState.Success(user)
+                        }
+                        is Either.Left -> {
+                            loginState = LoginUiState.Error("User profile not found.")
+                            // PErhaps navigate to a profile setup screen here?
+                        }
+                    }
                 }
 
-                is Either.Left<*> -> TODO()
-                is Either.Right<*> -> TODO()
+                is Either.Left -> {
+                    loginState = LoginUiState.Error(result.value.error.message ?: "Unknown error")
+                }
             }
         }
     }

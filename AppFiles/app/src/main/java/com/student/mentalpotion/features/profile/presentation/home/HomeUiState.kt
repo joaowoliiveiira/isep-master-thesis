@@ -1,4 +1,4 @@
-package com.student.mentalpotion.features.home.presentation.home
+package com.student.mentalpotion.features.profile.presentation.home
 
 data class HomeUiState(
     val selectedTab: HomeTab = HomeTab.Overall,

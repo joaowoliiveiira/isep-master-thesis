@@ -1,4 +1,4 @@
-package com.student.mentalpotion.features.home.presentation.home
+package com.student.mentalpotion.features.profile.presentation.home
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.student.mentalpotion.features.home.presentation.home
+package com.student.mentalpotion.features.profile.presentation.home
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.student.mentalpotion.R
 
