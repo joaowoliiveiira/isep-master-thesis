@@ -4,11 +4,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.student.mentalpotion.features.authentication.domain.model.User
-import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
 import com.student.mentalpotion.features.authentication.domain.usecase.LoginUseCase
-import com.student.mentalpotion.features.authentication.presentation.login.LoginUiState
-import com.student.mentalpotion.features.authentication.presentation.login.LoginUiState.*
 import com.student.mentalpotion.features.profile.domain.usecase.GetUserProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -41,12 +37,13 @@ class LoginViewModel @Inject constructor(
                     val user = result.value
 
                     // When we acquire a result for the UserProfile, might use it later :D
-                    when (val profileResult = getUserProfileUseCase(user.id)) {
+                    loginState = when (val profileResult = getUserProfileUseCase(user.uid)) {
                         is Either.Right -> {
-                            loginState = LoginUiState.Success(user)
+                            LoginUiState.Success(user)
                         }
+
                         is Either.Left -> {
-                            loginState = LoginUiState.Error("User profile not found.")
+                            LoginUiState.Error("User profile not found.")
                             // PErhaps navigate to a profile setup screen here?
                         }
                     }

@@ -13,7 +13,7 @@ data class UserProfileDTO(
         fun fromDomain(profile: UserProfile): UserProfileDTO {
             return UserProfileDTO(
                 uid = profile.uid,
-                name = profile.displayName,
+                name = profile.username,
                 email = profile.email
             )
         }
