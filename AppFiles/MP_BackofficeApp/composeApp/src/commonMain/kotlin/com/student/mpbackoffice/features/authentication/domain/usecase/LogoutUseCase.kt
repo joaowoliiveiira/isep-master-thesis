@@ -1,9 +1,11 @@
 package com.student.mpbackoffice.features.authentication.domain.usecase
 
-class GetCurrentUserUseCase(
-    private val repository: AuthenticationRepository
+import com.student.mpbackoffice.features.authentication.domain.repository.AuthRepository
+
+class LogoutUseCase(
+    private val repository: AuthRepository
 ) {
-    operator fun invoke(): Either<Throwable, User> {
-        return repository.getCurrentUser()
+    operator fun invoke() {
+        repository.logout()
     }
 }

@@ -2,13 +2,12 @@ package com.student.mpbackoffice.features.authentication.domain.usecase
 
 import arrow.core.Either
 import com.student.mpbackoffice.core.util.NetworkError
-import com.student.mpbackoffice.features.authentication.domain.model.Admin
 import com.student.mpbackoffice.features.authentication.domain.repository.AuthRepository
 
-class GetCurrentAdminUseCase(
+class ResetPasswordUseCase(
     private val repository: AuthRepository
 ) {
-    operator fun invoke(): Either<NetworkError, Admin> {
-        return repository.getCurrentUser()
+    suspend operator fun invoke(email: String): Either<NetworkError, Unit> {
+        return repository.resetPassword(email)
     }
 }
