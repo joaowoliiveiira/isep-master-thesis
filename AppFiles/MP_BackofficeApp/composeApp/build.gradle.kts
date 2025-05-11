@@ -51,6 +51,8 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel)
                 implementation(libs.androidx.lifecycle.runtime.compose)
                 implementation(projects.shared)
+                implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
 
                 // ✅ Arrow Either
                 implementation("io.arrow-kt:arrow-core:2.0.1")
