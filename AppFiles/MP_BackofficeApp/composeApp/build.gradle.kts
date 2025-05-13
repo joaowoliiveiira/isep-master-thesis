@@ -56,6 +56,16 @@ kotlin {
 
                 // ✅ Arrow Either
                 implementation("io.arrow-kt:arrow-core:2.0.1")
+
+                // Supabase client
+                implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
+                implementation("io.github.jan-tennert.supabase:postgrest-kt")
+                implementation("io.github.jan-tennert.supabase:auth-kt")
+                implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+                api(libs.koin.core)
+                implementation(project.dependencies.platform(libs.koin.bom))
+                implementation(libs.koin.core)
             }
         }
     }

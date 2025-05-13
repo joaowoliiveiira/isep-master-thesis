@@ -41,19 +41,41 @@ kotlin {
 
                 // ✅ Arrow Either
                 implementation("io.arrow-kt:arrow-core:1.2.0")
+
+                // Supabase client
+                implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
+                implementation("io.github.jan-tennert.supabase:postgrest-kt")
+                implementation("io.github.jan-tennert.supabase:auth-kt")
+                implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+                implementation("io.ktor:ktor-client-core:3.1.2")
+                implementation("io.ktor:ktor-client-content-negotiation:3.1.2")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.2")
+                implementation("io.ktor:ktor-client-cio:3.1.2")
             }
         }
 
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-okhttp:3.1.2")
+            }
+        }
 
         val iosMain by creating {
+            dependencies{
+                implementation("io.ktor:ktor-client-darwin:3.1.2")
+            }
             dependsOn(commonMain)
             iosTargets.forEach {
                 it.compilations["main"].defaultSourceSet.dependsOn(this)
             }
         }
 
-        val jvmMain by getting
+        val jvmMain by getting {
+            dependencies{
+                implementation("io.ktor:ktor-client-cio:3.1.2")
+            }
+        }
     }
 }
 
