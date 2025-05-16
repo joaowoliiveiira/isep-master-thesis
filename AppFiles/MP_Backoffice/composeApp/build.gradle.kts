@@ -61,6 +61,8 @@ kotlin {
 
             implementation(libs.bundles.ktor)
             implementation(libs.bundles.coil)
+
+            implementation("io.github.jan-tennert.supabase:auth-kt:3.1.4")
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -100,6 +102,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.runtime.android)
+    implementation(libs.androidx.ui.text.android)
     debugImplementation(compose.uiTooling)
 }
 

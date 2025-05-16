@@ -1,48 +1,19 @@
 package com.student.mpbackoffice.features.authentication.presentation.login
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.student.mpbackoffice.core.presentation.*
-
-@Composable
-fun LoginScreenRoot(
-    viewModel: LoginViewModel = koinViewModel(),
-    onLoginClick: (String, String) -> Unit,
-    onRegisterClick: (String) -> Unit,
-) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
-    LoginScreen(
-        state = state,
-        onAction = { action ->
-            when(action) {
-                is LoginAction.OnLoginClick -> onLoginClick(action.email, action.password)
-                is LoginAction.OnRegisterClick -> onRegisterClick(action.email)
-                else -> Unit
-            }
-            viewModel.onAction(action)
-        }
-    )
-}
+import com.student.mpbackoffice.features.authentication.presentation.components.AuthButton
+import com.student.mpbackoffice.features.authentication.presentation.components.AuthTextField
 
 @Composable
 fun LoginScreen(
@@ -63,58 +34,20 @@ fun LoginScreen(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.Start
         ) {
-            // Username Field
-            Text(
-                text = "Username",
-                color = PrimaryText,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            OutlinedTextField(
+            AuthTextField(
+                label = "Username",
                 value = state.username,
-                onValueChange = { onAction(LoginAction.OnUsernameChanged(it)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                placeholder = { Text("Enter your username") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryButton,
-                    unfocusedBorderColor = BorderColor,
-                    focusedTextColor = PrimaryText,
-                    unfocusedTextColor = PrimaryText
-                )
+                onValueChange = { onAction(LoginAction.OnUsernameChanged(it)) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password Field
-            Text(
-                text = "Password",
-                color = PrimaryText,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            OutlinedTextField(
+            AuthTextField(
+                label = "Password",
                 value = state.password,
                 onValueChange = { onAction(LoginAction.OnPasswordChanged(it)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                placeholder = { Text("Enter your password") },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryButton,
-                    unfocusedBorderColor = BorderColor,
-                    focusedTextColor = PrimaryText,
-                    unfocusedTextColor = PrimaryText
-                )
+                isPassword = true,
+                imeAction = ImeAction.Done
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -146,26 +79,12 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Login Button or Loading
-            if (state.isLoading) {
-                CircularProgressIndicator()
-            } else {
-                Button(
-                    onClick = {
-                        onAction(LoginAction.OnLoginClick(state.username, state.password))
-                    },
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .height(56.dp)
-                        .width(240.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        //containerColor = PrimaryButton,
-                        contentColor = White
-                    )
-                ) {
-                    Text(text = "Login", fontSize = 18.sp)
+            AuthButton(
+                isLoading = state.isLoading,
+                onClick = {
+                    onAction(LoginAction.OnLoginClick(state.username, state.password))
                 }
-            }
+            )
         }
     }
 }
