@@ -41,7 +41,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -49,8 +49,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
 
             // Added
-            implementation("androidx.compose.material3:material3:1.3.2")
-
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.room.runtime)

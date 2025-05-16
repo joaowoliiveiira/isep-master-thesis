@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val authRepository: SupabaseAuthRepository
+    //private val authRepository: SupabaseAuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -34,6 +34,7 @@ class LoginViewModel(
 
     private fun login(email: String, password: String) {
         viewModelScope.launch {
+            /**
             _state.value = _state.value.copy(isLoading = true, errorMeesage = null)
 
             val result = authRepository.login(email, password)
@@ -49,7 +50,7 @@ class LoginViewModel(
                         result.exceptionOrNull()?.message ?: "Unknown error"
                     )
                 )
-            }
+            }*/
         }
     }
 

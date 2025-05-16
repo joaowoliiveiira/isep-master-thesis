@@ -4,19 +4,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.student.mpbackoffice.core.presentation.*
 import com.student.mpbackoffice.features.authentication.presentation.components.AuthButton
 import com.student.mpbackoffice.features.authentication.presentation.components.AuthTextField
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LoginScreen(
+fun LoginScreenRoot(
+    viewModel: LoginViewModel = koinViewModel(),
+    onLoginClick: (String, String) -> Unit,
+    onRegisterClick: (String) -> Unit,
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LoginScreen(
+        state = state,
+        onAction = { action ->
+            when(action) {
+                is LoginAction.OnLoginClick -> onLoginClick(action.email, action.password)
+                is LoginAction.OnRegisterClick -> onRegisterClick(action.email)
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
+    )
+}
+
+@Composable
+private fun LoginScreen(
     state: LoginState,
     onAction: (LoginAction) -> Unit
 ) {

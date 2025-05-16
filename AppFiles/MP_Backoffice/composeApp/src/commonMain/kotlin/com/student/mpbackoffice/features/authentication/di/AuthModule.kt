@@ -23,7 +23,7 @@ val authModule = module {
 
     single<AuthRepository> { SupabaseAuthRepository(get()) }
 
-    factory { LoginViewModel(get()) }
+    //factory { LoginViewModel(get()) }
 }
 
 private fun AuthConfig.providers(function: () -> Unit) {}
