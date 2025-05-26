@@ -1,17 +1,14 @@
-package com.student.mpbackoffice.features.authentication.di
+package com.student.mpbackoffice.di
 
 import com.student.mpbackoffice.features.authentication.data.SupabaseAuthRepository
-import com.student.mpbackoffice.features.authentication.domain.repository.AuthRepository
 import com.student.mpbackoffice.features.authentication.presentation.login.LoginViewModel
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
-import io.github.jan.supabase.auth.AuthConfig
-import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.createSupabaseClient
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-val authModule = module {
-
+val appModule = module {
     single<SupabaseClient> {
         createSupabaseClient(
             supabaseUrl = "https://jzonmltlqfsuulgzunjx.supabase.co",
@@ -21,9 +18,6 @@ val authModule = module {
         }
     }
 
-    single<AuthRepository> { SupabaseAuthRepository(get()) }
-
-    //factory { LoginViewModel(get()) }
+    single { SupabaseAuthRepository(get()) }
+    factoryOf(::LoginViewModel)
 }
-
-private fun AuthConfig.providers(function: () -> Unit) {}

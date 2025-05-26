@@ -5,18 +5,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.student.mpbackoffice.features.authentication.di.authModule
-import org.koin.core.context.GlobalContext.startKoin
+import com.student.mpbackoffice.app.App
+import com.student.mpbackoffice.di.initKoin
+import org.koin.android.ext.koin.androidContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Initialize Koin
+        initKoin {
+            androidContext(this@MainActivity) // Optional, if needed by modules
+        }
+
         setContent {
-            startKoin {
-                modules(authModule)
-            }
-            App()
+            AppAndroidPreview()
         }
     }
 }
