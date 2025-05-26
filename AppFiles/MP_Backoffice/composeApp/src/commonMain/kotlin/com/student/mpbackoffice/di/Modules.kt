@@ -1,14 +1,18 @@
 package com.student.mpbackoffice.di
 
 import com.student.mpbackoffice.features.authentication.data.SupabaseAuthRepository
+import com.student.mpbackoffice.features.authentication.domain.repository.AuthRepository
 import com.student.mpbackoffice.features.authentication.presentation.login.LoginViewModel
+import com.student.mpbackoffice.features.authentication.presentation.signup.SignupViewModel
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
-import org.koin.core.module.dsl.factoryOf
+import io.github.jan.supabase.auth.Auth
 import org.koin.dsl.module
+import org.koin.core.module.dsl.factoryOf
 
 val appModule = module {
+
+    // Supabase client
     single<SupabaseClient> {
         createSupabaseClient(
             supabaseUrl = "https://jzonmltlqfsuulgzunjx.supabase.co",
@@ -18,6 +22,11 @@ val appModule = module {
         }
     }
 
-    single { SupabaseAuthRepository(get()) }
+    // AuthRepository
+    single<AuthRepository> { SupabaseAuthRepository(get()) }
+
+    // ViewModels
+    // factory = new instance every time
     factoryOf(::LoginViewModel)
+    factoryOf(::SignupViewModel)
 }
