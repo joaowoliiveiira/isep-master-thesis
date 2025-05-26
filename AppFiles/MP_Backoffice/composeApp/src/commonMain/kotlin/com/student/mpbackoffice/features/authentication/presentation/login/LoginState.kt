@@ -3,8 +3,9 @@ package com.student.mpbackoffice.features.authentication.presentation.login
 import com.student.mpbackoffice.core.presentation.UiText
 
 data class LoginState(
-    val username: String = "Username",
-    val password: String = "Password",
+    val username: String = "",
+    val password: String = "",
     val isLoading: Boolean = false,
-    val errorMeesage: UiText? = null
+    val loginSuccessful: Boolean = false,
+    val errorMessage: UiText? = null
 )

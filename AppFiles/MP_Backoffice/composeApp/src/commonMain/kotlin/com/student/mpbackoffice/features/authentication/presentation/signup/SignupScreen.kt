@@ -21,20 +21,28 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SignupScreenRoot(
     viewModel: SignupViewModel = koinViewModel(),
-    onSignupSuccess: () -> Unit
+    onSignupSuccess: () -> Unit,
+    onBackToLogin: () -> Unit,
 ) {
-    val state = viewModel.state.collectAsStateWithLifecycle().value
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     SignupScreen(
         state = state,
         onAction = { action ->
-            if (action is SignupAction.OnSignupClick) {
-                onSignupSuccess()
+            when (action) {
+                is SignupAction.OnSignupClick -> {
+                    viewModel.onAction(action)
+                    onSignupSuccess()
+                }
+                is SignupAction.OnBackToLoginClick -> {
+                    onBackToLogin()
+                }
+                else -> viewModel.onAction(action)
             }
-            viewModel.onAction(action)
         }
     )
 }
+
 
 @Composable
 fun SignupScreen(
