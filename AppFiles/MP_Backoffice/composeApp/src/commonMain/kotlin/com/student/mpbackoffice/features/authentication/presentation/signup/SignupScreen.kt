@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.semantics.contentDescription
@@ -25,30 +26,34 @@ fun SignupScreenRoot(
     onBackToLogin: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val effect by viewModel.effect.collectAsStateWithLifecycle(initialValue = null)
 
     SignupScreen(
         state = state,
-        onAction = { action ->
-            when (action) {
-                is SignupAction.OnSignupClick -> {
-                    viewModel.onAction(action)
-                    onSignupSuccess()
-                }
-                is SignupAction.OnBackToLoginClick -> {
-                    onBackToLogin()
-                }
-                else -> viewModel.onAction(action)
-            }
-        }
+        effect = effect,
+        onAction = viewModel::onAction,
+        onSignupSuccess = onSignupSuccess,
+        onBackToLogin = onBackToLogin
     )
 }
-
 
 @Composable
 fun SignupScreen(
     state: SignupState,
-    onAction: (SignupAction) -> Unit
+    effect: SignupEffect?,
+    onAction: (SignupAction) -> Unit,
+    onSignupSuccess: () -> Unit,
+    onBackToLogin: () -> Unit
 ) {
+    // Handle one-time effects (navigation, etc.)
+    LaunchedEffect(effect) {
+        when (effect) {
+            is SignupEffect.SignupSuccess -> onSignupSuccess()
+            is SignupEffect.NavigateBackToLogin -> onBackToLogin()
+            null -> Unit
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,7 +62,9 @@ fun SignupScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Column(
-            modifier = Modifier.widthIn(max = 400.dp).fillMaxWidth(),
+            modifier = Modifier
+                .widthIn(max = 400.dp)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.Start
         ) {
             AuthTextField(
@@ -65,17 +72,25 @@ fun SignupScreen(
                 value = state.email,
                 onValueChange = { onAction(SignupAction.OnEmailChanged(it)) }
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             AuthTextField(
                 label = "Password",
                 value = state.password,
                 onValueChange = { onAction(SignupAction.OnPasswordChanged(it)) },
-                isPassword = true
+                isPassword = true,
+                imeAction = ImeAction.Done
             )
+
             Spacer(modifier = Modifier.height(24.dp))
 
             state.errorMessage?.let { error ->
-                Text(text = error.asString(), modifier = Modifier.padding(bottom = 8.dp))
+                Text(
+                    text = error.asString(),
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
 
             AuthButton(
@@ -84,6 +99,23 @@ fun SignupScreen(
                     onAction(SignupAction.OnSignupClick(state.email, state.password))
                 }
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = "Already have an account? ", color = SecondaryText)
+                Text(
+                    text = "Login",
+                    color = SecondaryText,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable {
+                        onAction(SignupAction.OnBackToLoginClick(state.email))
+                    }
+                )
+            }
         }
     }
 }

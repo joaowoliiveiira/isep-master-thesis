@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -22,30 +23,41 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun LoginScreenRoot(
     viewModel: LoginViewModel = koinViewModel(),
-    onLoginClick: (String, String) -> Unit,
-    onRegisterClick: (String) -> Unit,
+    onLoginSuccess: () -> Unit,
+    onNavigateToSignup: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LoginScreen(
         state = state,
-        onAction = { action ->
-            when(action) {
-                is LoginAction.OnLoginClick -> onLoginClick(action.email, action.password)
-                is LoginAction.OnRegisterClick -> onRegisterClick(action.email)
-                else -> Unit
-            }
-            viewModel.onAction(action)
-        }
+        onAction = viewModel::onAction,
+        onLoginSuccess = onLoginSuccess,
+        onNavigateToSignup = onNavigateToSignup
     )
 }
 
 @Composable
-private fun LoginScreen(
+fun LoginScreen(
     state: LoginState,
-    onAction: (LoginAction) -> Unit
+    onAction: (LoginAction) -> Unit,
+    onLoginSuccess: () -> Unit,
+    onNavigateToSignup: () -> Unit
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Effect: Navigate to home after successful login
+    LaunchedEffect(state.loginSuccessful) {
+        if (state.loginSuccessful) {
+            onLoginSuccess()
+        }
+    }
+
+    // Effect: Navigate to signup screen
+    LaunchedEffect(state.navigateToSignup) {
+        if (state.navigateToSignup) {
+            onNavigateToSignup()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -83,8 +95,7 @@ private fun LoginScreen(
             state.errorMessage?.let { error ->
                 Text(
                     text = error.asString(),
-                    //color = MaterialTheme.colorScheme.error,
-                    //style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
@@ -109,6 +120,7 @@ private fun LoginScreen(
             AuthButton(
                 isLoading = state.isLoading,
                 onClick = {
+                    keyboardController?.hide()
                     onAction(LoginAction.OnLoginClick(state.email, state.password))
                 }
             )

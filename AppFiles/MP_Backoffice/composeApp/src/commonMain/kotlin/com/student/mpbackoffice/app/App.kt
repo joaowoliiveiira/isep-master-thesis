@@ -2,7 +2,6 @@ package com.student.mpbackoffice.app
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
@@ -12,12 +11,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.student.mpbackoffice.features.authentication.presentation.login.LoginScreenRoot
-import com.student.mpbackoffice.features.authentication.presentation.login.LoginViewModel
 import com.student.mpbackoffice.features.authentication.presentation.signup.SignupScreenRoot
-import com.student.mpbackoffice.features.authentication.presentation.signup.SignupViewModel
 import com.student.mpbackoffice.features.home.presentation.home.HomeScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
@@ -34,23 +30,19 @@ fun App() {
                 startDestination = Route.LoginPage
             ) {
                 composable<Route.LoginPage> {
-                    val viewModel = koinViewModel<LoginViewModel>()
-
                     LoginScreenRoot(
-                        viewModel = viewModel,
-                        onLoginClick = { _, _ ->
-                            // TODO: validate credentials before navigation if needed
-                            navController.navigate(Route.HomePage)
+                        onLoginSuccess = {
+                            navController.navigate(Route.HomePage) {
+                                popUpTo(Route.LoginPage) { inclusive = true }
+                            }
                         },
-                        onRegisterClick = {
+                        onNavigateToSignup = {
                             navController.navigate(Route.SignupPage)
                         }
                     )
                 }
 
                 composable<Route.SignupPage> {
-                    val viewModel = koinViewModel<SignupViewModel>()
-
                     SignupScreenRoot(
                         onSignupSuccess = {
                             navController.navigate(Route.HomePage) {
@@ -70,17 +62,4 @@ fun App() {
             }
         }
     }
-}
-
-@Composable
-private inline fun <reified T: ViewModel> NavBackStackEntry.sharedKoinViewModel(
-    navController: NavController
-): T {
-    val navGraphRoute = destination.parent?.route ?: return koinViewModel<T>()
-    val parentEntry = remember(this) {
-        navController.getBackStackEntry(navGraphRoute)
-    }
-    return koinViewModel(
-        viewModelStoreOwner = parentEntry
-    )
 }
