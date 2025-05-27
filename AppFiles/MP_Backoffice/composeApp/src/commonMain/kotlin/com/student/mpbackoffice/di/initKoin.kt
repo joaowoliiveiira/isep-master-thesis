@@ -2,13 +2,10 @@ package com.student.mpbackoffice.di
 
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
-import org.koin.dsl.module
-import org.koin.core.module.Module
 
-fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
+fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
-        appDeclaration()
-        modules(appModule)
+        config?.invoke(this)
+        modules(sharedModule, platformModule)
     }
-
-fun initKoin() = initKoin {}
+}

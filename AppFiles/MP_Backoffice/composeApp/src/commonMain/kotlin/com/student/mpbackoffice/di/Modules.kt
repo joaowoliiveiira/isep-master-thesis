@@ -9,8 +9,11 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
 import org.koin.dsl.module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.Module
 
-val appModule = module {
+expect val platformModule: Module
+
+val sharedModule = module {
 
     // Supabase client
     single<SupabaseClient> {
