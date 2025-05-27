@@ -13,19 +13,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize Koin
-        initKoin {
-            androidContext(this@MainActivity) // Optional, if needed by modules
-        }
-
         setContent {
-            AppAndroidPreview()
+            App()
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
 }

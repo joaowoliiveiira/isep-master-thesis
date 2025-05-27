@@ -5,15 +5,14 @@ import androidx.compose.ui.window.application
 import com.student.mpbackoffice.app.App
 import com.student.mpbackoffice.di.initKoin
 
-fun main() = application {
-
-    // Initialize Koin
+fun main() {
     initKoin()
-
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "MP_Backoffice",
-    ) {
-        App()
+    application {
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "CMP-Bookpedia",
+        ) {
+            App()
+        }
     }
 }

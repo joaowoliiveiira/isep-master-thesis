@@ -2,10 +2,10 @@ package com.student.mpbackoffice.features.authentication.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.student.mpbackoffice.core.domain.Error
-import com.student.mpbackoffice.core.domain.Result
-import com.student.mpbackoffice.core.presentation.UiText
 import com.student.mpbackoffice.features.authentication.domain.repository.AuthRepository
+import com.student.mpbackoffice.core.domain.onError
+import com.student.mpbackoffice.core.domain.onSuccess
+import com.student.mpbackoffice.core.presentation.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -29,23 +29,32 @@ class LoginViewModel(
 
     private fun login() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, errorMessage = null) }
-
-            val result = authRepository.login(_state.value.email, _state.value.password)
-
             _state.update {
-                when (result) {
-                    is Result.Success -> it.copy(
-                        isLoading = false,
-                        loginSuccessful = true
-                    )
-                    is Result.Failure -> it.copy(
-                        isLoading = false,
-                        errorMessage = result.toUiText()
-                    )
-                }
+                it.copy(
+                    isLoading = true, errorMessage = null
+                )
             }
 
+            authRepository
+                .login(_state.value.email, _state.value.password)
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            isLoading = true,
+                            errorMessage = null,
+                            loginSuccessful = true
+                        )
+                    }
+                }
+                .onError { error ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.toUiText(),
+                            loginSuccessful = false
+                        )
+                    }
+                }
         }
     }
 }

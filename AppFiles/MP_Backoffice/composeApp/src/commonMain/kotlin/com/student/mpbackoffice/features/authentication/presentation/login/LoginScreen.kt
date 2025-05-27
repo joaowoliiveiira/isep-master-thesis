@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -44,6 +45,8 @@ private fun LoginScreen(
     state: LoginState,
     onAction: (LoginAction) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,8 +63,8 @@ private fun LoginScreen(
         ) {
             AuthTextField(
                 label = "Username",
-                value = state.username,
-                onValueChange = { onAction(LoginAction.OnUsernameChanged(it)) }
+                value = state.email,
+                onValueChange = { onAction(LoginAction.OnEmailChanged(it)) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -77,7 +80,7 @@ private fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Error Message (if any)
-            state.errorMeesage?.let { error ->
+            state.errorMessage?.let { error ->
                 Text(
                     text = error.asString(),
                     //color = MaterialTheme.colorScheme.error,
@@ -97,7 +100,7 @@ private fun LoginScreen(
                     color = SecondaryText,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
-                        .clickable { onAction(LoginAction.OnRegisterClick(state.username)) }
+                        .clickable { onAction(LoginAction.OnRegisterClick(state.email)) }
                 )
             }
 
@@ -106,7 +109,7 @@ private fun LoginScreen(
             AuthButton(
                 isLoading = state.isLoading,
                 onClick = {
-                    onAction(LoginAction.OnLoginClick(state.username, state.password))
+                    onAction(LoginAction.OnLoginClick(state.email, state.password))
                 }
             )
         }

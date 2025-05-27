@@ -1,5 +1,7 @@
 package com.student.mpbackoffice.features.authentication.data
 
+import com.student.mpbackoffice.core.domain.DataError
+import com.student.mpbackoffice.core.domain.Result
 import com.student.mpbackoffice.features.authentication.domain.repository.AuthRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -14,27 +16,27 @@ class SupabaseAuthRepository(
     private val auth: Auth
         get() = client.auth
 
-    override suspend fun login(email: String, password: String): Result<Unit> {
+    override suspend fun login(email: String, password: String): Result<Unit, DataError.Remote> {
         return try {
             auth.signInWith(Email) {
                 this.email = email
                 this.password = password
             }
-            Result.success(Unit)
+            Result.Success(Unit)
         } catch (e: HttpRequestException) {
-            Result.failure(e)
+            Result.Error(DataError.Remote.UNKNOWN)
         }
     }
 
-    override suspend fun signup(email: String, password: String): Result<Unit> {
+    override suspend fun signup(email: String, password: String): Result<Unit, DataError.Remote> {
         return try {
             auth.signUpWith(Email) {
                 this.email = email
                 this.password = password
             }
-            Result.success(Unit)
+            Result.Success(Unit)
         } catch (e: HttpRequestException) {
-            Result.failure(e)
+            Result.Error(DataError.Remote.UNKNOWN)
         }
     }
 

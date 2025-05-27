@@ -4,6 +4,7 @@ package com.student.mpbackoffice.core.domain
  * Base on https://github.com/philipplackner/CMP-Bookpedia/blob/initial/composeApp/src/commonMain/kotlin/com/plcoding/bookpedia/core/domain/Result.kt
  * https://www.youtube.com/watch?v=MiLN2vs2Oe0
  */
+
 sealed interface Result<out D, out E: Error> {
     data class Success<out D>(val data: D): Result<D, Nothing>
     data class Error<out E: com.student.mpbackoffice.core.domain.Error>(val error: E):
