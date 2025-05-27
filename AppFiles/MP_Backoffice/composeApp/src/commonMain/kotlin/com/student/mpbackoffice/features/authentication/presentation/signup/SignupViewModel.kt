@@ -7,6 +7,7 @@ import com.student.mpbackoffice.core.domain.onSuccess
 import com.student.mpbackoffice.core.presentation.UiText
 import com.student.mpbackoffice.core.presentation.toUiText
 import com.student.mpbackoffice.features.authentication.domain.repository.AuthRepository
+import io.github.jan.supabase.auth.exception.AuthRestException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -59,26 +60,44 @@ class SignupViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            authRepository.signup(email, password)
-                .onSuccess {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = null,
-                            loginSuccessful = true
-                        )
+            try {
+                authRepository.signup(email, password)
+                    .onSuccess {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = null,
+                                loginSuccessful = true
+                            )
+                        }
+                        _effect.value = SignupEffect.SignupSuccess
                     }
-                    _effect.value = SignupEffect.SignupSuccess
-                }
-                .onError { error ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = error.toUiText(),
-                            loginSuccessful = false
-                        )
+                    .onError { error ->
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = error.toUiText(),
+                                loginSuccessful = false
+                            )
+                        }
                     }
+            } catch (e: AuthRestException) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = UiText.DynamicString(e.message.toString()),
+                        loginSuccessful = false
+                    )
                 }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = UiText.DynamicString(e.message.toString()),
+                        loginSuccessful = false
+                    )
+                }
+            }
         }
     }
 
