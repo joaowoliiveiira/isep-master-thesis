@@ -1,4 +1,4 @@
-package com.student.mpbackoffice.features.home.presentation.home
+package com.student.mpbackoffice.features.data_manager.presentation.home
 
 
 import androidx.compose.runtime.Composable

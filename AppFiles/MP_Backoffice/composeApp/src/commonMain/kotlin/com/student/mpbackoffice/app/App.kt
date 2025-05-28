@@ -2,17 +2,13 @@ package com.student.mpbackoffice.app
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.student.mpbackoffice.features.authentication.presentation.login.LoginScreenRoot
 import com.student.mpbackoffice.features.authentication.presentation.signup.SignupScreenRoot
-import com.student.mpbackoffice.features.home.presentation.home.HomeScreen
+import com.student.mpbackoffice.features.data_manager.presentation.home.HomeScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -56,9 +52,13 @@ fun App() {
                 }
             }
 
-            // Home Page
-            composable<Route.HomePage> {
-                HomeScreen()
+            // Manage Graph
+            navigation<Route.ManageGraph>(
+                startDestination = Route.HomePage
+            ) {
+                composable<Route.HomePage> {
+                    HomeScreen()
+                }
             }
         }
     }
