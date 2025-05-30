@@ -1,0 +1,107 @@
+Table users {
+  id uuid [primary key]
+  username varchar
+  email varchar
+  avatar_id uuid [ref: > avatars.id]
+  created_at timestamp
+}
+
+Table avatars {
+  id uuid [primary key]
+  name varchar
+  image_url varchar
+  unlock_condition text
+}
+
+Table user_avatars {
+  user_id uuid [primary key, ref: > users.id]
+  avatar_id uuid [primary key, ref: > avatars.id]
+  unlocked_at timestamp
+}
+
+Table skills {
+  id uuid [primary key]
+  name varchar
+  description text
+}
+
+Table user_skills {
+  user_id uuid [primary key, ref: > users.id]
+  skill_id uuid [primary key, ref: > skills.id]
+  level int
+  xp int
+}
+
+Table topics {
+  id uuid [primary key]
+  title varchar
+  description text
+}
+
+Table tools {
+  id uuid [primary key]
+  topic_id uuid [ref: > topics.id]
+  type varchar // PODCAST, GUIDE, MUSIC, VIDEO
+  title varchar
+  content_url varchar
+}
+
+Table routines {
+  id uuid [primary key]
+  topic_id uuid [ref: > topics.id]
+  title varchar
+  description text
+}
+
+Table activities {
+  id uuid [primary key]
+  title varchar
+  description text
+  type varchar // TIME_BASED, TEXT, RATING, PHOTO
+  difficulty int
+}
+
+Table routine_activities {
+  routine_id uuid [primary key, ref: > routines.id]
+  activity_id uuid [primary key, ref: > activities.id]
+}
+
+Table activity_tools {
+  activity_id uuid [primary key, ref: > activities.id]
+  tool_id uuid [primary key, ref: > tools.id]
+}
+
+Table activity_skills {
+  activity_id uuid [primary key, ref: > activities.id]
+  skill_id uuid [primary key, ref: > skills.id]
+  xp_awarded int
+}
+
+Table user_routines {
+  id uuid [primary key]
+  user_id uuid [ref: > users.id]
+}
+
+Table user_active_topic_routines {
+  user_routine_id uuid [primary key, ref: > user_routines.id]
+  routine_template_id uuid [primary key, ref: > routines.id]
+  activated_at timestamp
+}
+
+Table activity_instances {
+  id uuid [primary key]
+  user_routine_id uuid [ref: > user_routines.id]
+  activity_id uuid [ref: > activities.id]
+  scheduled_time timestamp
+  completed boolean
+  source_routine_id uuid [ref: > routines.id]
+}
+
+Table activity_responses {
+  id uuid [primary key]
+  activity_instance_id uuid [ref: > activity_instances.id]
+  response_text text
+  rating int
+  photo_url varchar
+  time_spent_minutes int
+}
