@@ -19,57 +19,70 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     jvm("desktop")
 
     room {
         schemaDirectory("$projectDir/schemas")
     }
-    
+
     sourceSets {
-        val desktopMain by getting
-        
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
 
-            // Added
-            implementation(libs.koin.android)
-            implementation(libs.koin.androidx.compose)
-            implementation(libs.ktor.client.okhttp)
+                implementation(libs.androidx.lifecycle.viewmodel)
+                implementation(libs.androidx.lifecycle.runtime.compose)
+                implementation(libs.androidx.room.runtime)
+                implementation(libs.sqlite.bundled)
+
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
+                api(libs.koin.core)
+
+                implementation(libs.bundles.ktor)
+                implementation(libs.bundles.coil)
+
+                implementation(libs.jetbrains.compose.navigation)
+
+                implementation("io.github.jan-tennert.supabase:auth-kt:3.1.4")
+
+                // Firebase Kotlin SDK (KMP-compatible)
+                implementation("dev.gitlive:firebase-firestore:1.8.0")
+                implementation("dev.gitlive:firebase-auth:1.8.0")
+            }
         }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
 
-            // Added
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-            api(libs.koin.core)
+        val androidMain by getting {
+            dependencies {
+                implementation(compose.preview)
+                implementation(libs.androidx.activity.compose)
 
-            implementation(libs.bundles.ktor)
-            implementation(libs.bundles.coil)
+                implementation(libs.koin.android)
+                implementation(libs.koin.androidx.compose)
+                implementation(libs.ktor.client.okhttp)
 
-            implementation(libs.jetbrains.compose.navigation)
-
-            implementation("io.github.jan-tennert.supabase:auth-kt:3.1.4")
+                // Android Firebase SDKs (required for Android target)
+                implementation("com.google.firebase:firebase-auth-ktx")
+                implementation("com.google.firebase:firebase-firestore-ktx")
+            }
         }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutines.swing)
 
-            // Added
-            implementation(libs.ktor.client.okhttp)
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.coroutines.swing)
+                implementation(libs.ktor.client.okhttp)
+
+                // JVM-specific Firestore/Auth implementation for Desktop
+                implementation("dev.gitlive:firebase-firestore-jvm:1.8.0")
+                implementation("dev.gitlive:firebase-auth-jvm:1.8.0")
+            }
         }
     }
 }
@@ -85,16 +98,19 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
