@@ -2,7 +2,7 @@ package com.student.mentalpotion.features.authentication.data.repository
 
 import com.student.mentalpotion.core.util.ApiError
 import com.student.mentalpotion.core.util.NetworkError
-import com.student.mentalpotion.features.authentication.domain.model.User
+import com.student.mentalpotion.features.authentication.domain.model.AuthUser
 import com.student.mentalpotion.features.authentication.fakes.FakeFirebaseAuthService
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
@@ -19,7 +19,7 @@ class AuthenticationRepoImplTest : StringSpec({
 
         runTest {
             val result = repository.login("test@example.com", "password")
-            result.shouldBeRight(User("123", "test@example.com"))
+            result.shouldBeRight(AuthUser("123", "test@example.com"))
         }
     }
 
@@ -36,10 +36,10 @@ class AuthenticationRepoImplTest : StringSpec({
     }
 
     "getCurrentUser returns Right when user is logged in" {
-        fakeService.loggedInUser = User("999", "me@example.com")
+        fakeService.loggedInUser = AuthUser("999", "me@example.com")
 
         val result = repository.getCurrentUser()
-        result.shouldBeRight(User("999", "me@example.com"))
+        result.shouldBeRight(AuthUser("999", "me@example.com"))
     }
 
     "getCurrentUser returns Left when no user is logged in" {

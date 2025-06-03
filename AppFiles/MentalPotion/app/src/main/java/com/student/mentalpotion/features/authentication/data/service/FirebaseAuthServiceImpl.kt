@@ -1,49 +1,57 @@
 package com.student.mentalpotion.features.authentication.data.service
 
-import arrow.core.Either
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.student.mentalpotion.features.authentication.data.mapper.toNetworkError
-import com.student.mentalpotion.features.authentication.domain.model.User
+import com.student.mentalpotion.core.util.Result
 import com.student.mentalpotion.core.util.NetworkError
+import com.student.mentalpotion.core.util.runFirebaseCatching
+import com.student.mentalpotion.features.authentication.domain.model.AuthUser
+import com.student.mentalpotion.features.authentication.domain.repository.FirebaseAuthService
 import kotlinx.coroutines.tasks.await
 
 class FirebaseAuthServiceImpl(
     private val firebaseAuth: FirebaseAuth = Firebase.auth
 ) : FirebaseAuthService {
 
-    override suspend fun login(email: String, password: String): Either<NetworkError, User> {
-        return Either.catch {
+    override suspend fun login(email: String, password: String): Result<AuthUser, NetworkError> {
+        return runFirebaseCatching {
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            val firebaseUser = result.user ?: throw Exception("User is null")
-            User(firebaseUser.uid, firebaseUser.email ?: "")
-        }.mapLeft { it.toNetworkError() }
+            val user = result.user ?: throw Exception("User is null")
+            AuthUser(user.uid, user.email ?: "")
+        }
     }
 
-    override suspend fun register(email: String, password: String): Either<NetworkError, User> {
-        return Either.catch {
+    override suspend fun register(email: String, password: String): Result<AuthUser, NetworkError> {
+        return runFirebaseCatching {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            val firebaseUser = result.user ?: throw Exception("User is null")
-            User(firebaseUser.uid, firebaseUser.email ?: "")
-        }.mapLeft { it.toNetworkError() }
+            val user = result.user ?: throw Exception("User is null")
+            AuthUser(user.uid, user.email ?: "")
+        }
+    }
+
+    override suspend fun resetPassword(email: String): Result<Unit, NetworkError> {
+        return runFirebaseCatching {
+            firebaseAuth.sendPasswordResetEmail(email).await()
+        }
     }
 
     override fun logout() {
         firebaseAuth.signOut()
     }
 
-    override fun getCurrentUser(): Either<Throwable, User> {
-        return Either.catch {
+    override fun isLoggedIn(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
+
+    override suspend fun getCurrentAccount(): Result<AuthUser, NetworkError> {
+        return runFirebaseCatching {
             val user = firebaseAuth.currentUser ?: throw Exception("No user logged in")
-            User(user.uid, user.email ?: "")
+            AuthUser(user.uid, user.email ?: "")
         }
     }
 
-    override suspend fun resetPassword(email: String): Either<NetworkError, Unit> {
-        return Either.catch {
-            firebaseAuth.sendPasswordResetEmail(email).await()
-            Unit
-        }.mapLeft { it.toNetworkError() }
+    override fun getUserIdOrNull(): String? {
+        return firebaseAuth.currentUser?.uid
     }
 }

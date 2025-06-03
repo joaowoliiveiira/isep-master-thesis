@@ -3,8 +3,8 @@ package com.student.mentalpotion.features.authentication.fakes
 import arrow.core.Either
 import com.student.mentalpotion.core.util.ApiError
 import com.student.mentalpotion.core.util.NetworkError
-import com.student.mentalpotion.features.authentication.domain.model.User
-import com.student.mentalpotion.features.authentication.data.service.FirebaseAuthService
+import com.student.mentalpotion.core.domain.model.User
+import com.student.mentalpotion.features.authentication.domain.repository.FirebaseAuthService
 
 class FakeFirebaseAuthService : FirebaseAuthService {
 

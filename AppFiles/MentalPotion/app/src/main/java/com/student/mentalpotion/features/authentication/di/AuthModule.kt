@@ -3,22 +3,22 @@ package com.student.mentalpotion.features.authentication.di
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.student.mentalpotion.features.authentication.data.repository.AuthenticationRepoImpl
-import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
-import com.student.mentalpotion.features.authentication.domain.usecase.GetCurrentUserUseCase
+import com.student.mentalpotion.core.domain.repository.UserRepository
+import com.student.mentalpotion.features.authentication.data.repository.AuthAccountRepoImpl
 import com.student.mentalpotion.features.authentication.domain.usecase.LoginUseCase
 import com.student.mentalpotion.features.authentication.domain.usecase.LogoutUseCase
 import com.student.mentalpotion.features.authentication.domain.usecase.RegisterUseCase
-import com.student.mentalpotion.features.authentication.data.service.FirebaseAuthService
+import com.student.mentalpotion.features.authentication.domain.repository.FirebaseAuthService
 import com.student.mentalpotion.features.authentication.data.service.FirebaseAuthServiceImpl
+import com.student.mentalpotion.features.authentication.domain.repository.AuthAccountRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@InstallIn(SingletonComponent::class)
 @Module
+@InstallIn(SingletonComponent::class)
 object AuthModule {
 
     @Provides
@@ -33,27 +33,23 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(
+    fun provideAuthenticationRepository(
         authService: FirebaseAuthService
-    ): AuthenticationRepository = AuthenticationRepoImpl(authService)
+    ): AuthAccountRepository = AuthAccountRepoImpl(authService)
 
     @Provides
     fun provideLoginUseCase(
-        repository: AuthenticationRepository
-    ) = LoginUseCase(repository)
+        repository: AuthAccountRepository
+    ): LoginUseCase = LoginUseCase(repository)
 
     @Provides
     fun provideRegisterUseCase(
-        repository: AuthenticationRepository
-    ) = RegisterUseCase(repository)
+        authRepository: AuthAccountRepository,
+        userRepository: UserRepository
+    ): RegisterUseCase = RegisterUseCase(authRepository, userRepository)
 
     @Provides
     fun provideLogoutUseCase(
-        repository: AuthenticationRepository
-    ) = LogoutUseCase(repository)
-
-    @Provides
-    fun provideGetCurrentUserUseCase(
-        repository: AuthenticationRepository
-    ) = GetCurrentUserUseCase(repository)
+        repository: AuthAccountRepository
+    ): LogoutUseCase = LogoutUseCase(repository)
 }

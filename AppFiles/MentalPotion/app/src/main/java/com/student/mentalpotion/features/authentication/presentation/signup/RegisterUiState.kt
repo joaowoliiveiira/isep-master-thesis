@@ -1,10 +1,10 @@
 package com.student.mentalpotion.features.authentication.presentation.signup
 
-import com.student.mentalpotion.features.authentication.domain.model.User
+import com.student.mentalpotion.core.domain.model.RegisteredUser
 
 sealed class RegisterUiState {
-    object Idle : RegisterUiState()
-    object Loading : RegisterUiState()
-    data class Success(val user: User) : RegisterUiState()
+    data object Idle : RegisterUiState()
+    data object Loading : RegisterUiState()
+    data class Success(val user: RegisteredUser) : RegisterUiState()
     data class Error(val message: String) : RegisterUiState()
 }

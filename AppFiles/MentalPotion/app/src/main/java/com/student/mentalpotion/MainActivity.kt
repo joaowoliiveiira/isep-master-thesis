@@ -19,6 +19,7 @@ import com.student.mentalpotion.features.activities.presentation.topics.TopicLis
 import com.student.mentalpotion.features.authentication.presentation.login.LandingScreen
 import com.student.mentalpotion.features.authentication.presentation.login.LoginViewModel
 import com.student.mentalpotion.features.authentication.presentation.signup.RegisterScreen
+import com.student.mentalpotion.features.authentication.presentation.signup.RegisterViewModel
 import com.student.mentalpotion.features.profile.presentation.home.HomeScreen
 import com.student.mentalpotion.ui.components.BottomNavBar
 import com.student.mentalpotion.ui.theme.MentalPotionTheme
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             MentalPotionTheme {
                 val rootNavController = rememberNavController()
@@ -41,13 +43,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
 fun RootNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
         startDestination = "auth"
     ) {
-        // Navigation for "outside" of the app content
         navigation(startDestination = AppDestinations.Landing.route, route = "auth") {
             composable(AppDestinations.Landing.route) {
                 LandingScreen(navController)
@@ -67,33 +69,41 @@ fun RootNavHost(navController: NavHostController) {
             }
 
             composable(AppDestinations.Register.route) {
+                val viewModel: RegisterViewModel = hiltViewModel()
                 RegisterScreen(
+                    viewModel = viewModel,
                     onRegisterSuccess = {
                         navController.navigate("main") {
                             popUpTo("auth") { inclusive = true }
                         }
-                    },
-                    onBackToLogin = {
-                        navController.popBackStack(AppDestinations.Login.route, false)
                     }
                 )
             }
         }
 
-        // Navigation for "inside" of the app content
         navigation(startDestination = AppDestinations.Home.route, route = "main") {
             composable(AppDestinations.Home.route) {
-                MainScaffold(startDestination = AppDestinations.Home.route, parentNavController = navController)
+                MainScaffold(
+                    startDestination = AppDestinations.Home.route,
+                    parentNavController = navController
+                )
             }
 
             composable(AppDestinations.Topics.route) {
-                MainScaffold(startDestination = AppDestinations.Topics.route, parentNavController = navController)
+                MainScaffold(
+                    startDestination = AppDestinations.Topics.route,
+                    parentNavController = navController
+                )
             }
 
-            // Add more main destinations here if needed
+            // Future destination (e.g., Profile)
+            // composable(AppDestinations.Profile.route) {
+            //     ProfileScreen()
+            // }
         }
     }
 }
+
 
 
 /**
@@ -127,16 +137,9 @@ fun MainScaffold(
             composable(AppDestinations.Home.route) {
                 HomeScreen()
             }
-
             composable(AppDestinations.Topics.route) {
                 TopicListScreen(navController = innerNavController)
             }
-
-            /*
-            composable(AppDestinations.Profile.route) {
-                ProfileScreen()
-            }
-            */
         }
     }
 }

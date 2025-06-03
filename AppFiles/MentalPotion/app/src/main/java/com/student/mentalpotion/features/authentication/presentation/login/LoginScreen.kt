@@ -27,15 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.student.mentalpotion.features.authentication.domain.model.User
 import com.student.mentalpotion.core.navigation.AppDestinations
-import kotlinx.coroutines.delay
+import com.student.mentalpotion.features.authentication.domain.model.AuthUser
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (User) -> Unit,
-    navController: NavController,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    onLoginSuccess: (AuthUser) -> Unit,
+    navController: NavController
 ) {
     val loginState = viewModel.loginState
     var passwordVisible by remember { mutableStateOf(false) }
@@ -197,14 +196,6 @@ fun LoginScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = Color.White)
-                }
-            }
-
-            if (loginState is LoginUiState.Error) {
-                LaunchedEffect(Unit) {
-                    delay(100)
-                    SnackbarHostState().showSnackbar(loginState.message)
-                    viewModel.resetUiState()
                 }
             }
         }

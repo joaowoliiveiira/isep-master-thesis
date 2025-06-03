@@ -1,14 +1,14 @@
 package com.student.mentalpotion.features.authentication.domain.usecase
 
-import arrow.core.Either
+import com.student.mentalpotion.core.util.Result
 import com.student.mentalpotion.core.util.NetworkError
-import com.student.mentalpotion.features.authentication.domain.model.User
-import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
+import com.student.mentalpotion.features.authentication.domain.model.AuthUser
+import com.student.mentalpotion.features.authentication.domain.repository.AuthAccountRepository
 
 class LoginUseCase(
-    private val repository: AuthenticationRepository
+    private val repository: AuthAccountRepository
 ) {
-    suspend operator fun invoke(email: String, password: String): Either<NetworkError, User> {
+    suspend operator fun invoke(email: String, password: String): Result<AuthUser, NetworkError> {
         return repository.login(email, password)
     }
 }

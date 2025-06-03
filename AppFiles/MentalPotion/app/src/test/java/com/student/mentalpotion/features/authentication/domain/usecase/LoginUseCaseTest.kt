@@ -3,7 +3,7 @@ package com.student.mentalpotion.features.authentication.domain.usecase
 import arrow.core.Either
 import com.student.mentalpotion.core.util.ApiError
 import com.student.mentalpotion.core.util.NetworkError
-import com.student.mentalpotion.features.authentication.domain.model.User
+import com.student.mentalpotion.core.domain.model.User
 import com.student.mentalpotion.features.authentication.domain.repository.AuthenticationRepository
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
