@@ -20,6 +20,8 @@ import com.student.mentalpotion.features.authentication.presentation.login.Landi
 import com.student.mentalpotion.features.authentication.presentation.login.LoginViewModel
 import com.student.mentalpotion.features.authentication.presentation.signup.RegisterScreen
 import com.student.mentalpotion.features.authentication.presentation.signup.RegisterViewModel
+import com.student.mentalpotion.features.authentication.presentation.splash.SplashScreen
+import com.student.mentalpotion.features.authentication.presentation.splash.SplashViewModel
 import com.student.mentalpotion.features.profile.presentation.home.HomeScreen
 import com.student.mentalpotion.ui.components.BottomNavBar
 import com.student.mentalpotion.ui.theme.MentalPotionTheme
@@ -43,13 +45,22 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun RootNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "auth"
+        startDestination = "splash"
     ) {
+        // Splash screen with auto-login logic
+        composable("splash") {
+            val viewModel: SplashViewModel = hiltViewModel()
+            SplashScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+        // Auth flow
         navigation(startDestination = AppDestinations.Landing.route, route = "auth") {
             composable(AppDestinations.Landing.route) {
                 LandingScreen(navController)
@@ -81,6 +92,7 @@ fun RootNavHost(navController: NavHostController) {
             }
         }
 
+        // Main app flow
         navigation(startDestination = AppDestinations.Home.route, route = "main") {
             composable(AppDestinations.Home.route) {
                 MainScaffold(
@@ -95,16 +107,9 @@ fun RootNavHost(navController: NavHostController) {
                     parentNavController = navController
                 )
             }
-
-            // Future destination (e.g., Profile)
-            // composable(AppDestinations.Profile.route) {
-            //     ProfileScreen()
-            // }
         }
     }
 }
-
-
 
 /**
  * MainScaffold manages the bottom bar and main in-app screens.

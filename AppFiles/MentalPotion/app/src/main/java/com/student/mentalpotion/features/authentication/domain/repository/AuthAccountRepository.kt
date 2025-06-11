@@ -9,4 +9,7 @@ interface AuthAccountRepository {
     suspend fun register(email: String, password: String): Result<AuthUser, NetworkError>
     fun logout()
     suspend fun resetPassword(email: String): Result<Unit, NetworkError>
+
+    fun isLoggedIn(): Boolean
+    suspend fun getCurrentUser(): Result<AuthUser, NetworkError>
 }

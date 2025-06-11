@@ -25,4 +25,8 @@ class AuthAccountRepoImpl(
     override suspend fun resetPassword(email: String): Result<Unit, NetworkError> {
         return authService.resetPassword(email)
     }
+
+    override fun isLoggedIn(): Boolean = authService.isLoggedIn()
+
+    override suspend fun getCurrentUser(): Result<AuthUser, NetworkError> = authService.getCurrentAccount()
 }

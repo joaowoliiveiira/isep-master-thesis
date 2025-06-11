@@ -1,6 +1,7 @@
 package com.student.mentalpotion.features.profile.presentation.home
 
 import androidx.lifecycle.ViewModel
+import com.student.mentalpotion.features.authentication.domain.usecase.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,8 +11,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    // Later inject use cases
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
+
+    fun logout() {
+        logoutUseCase()
+    }
 
     private val _selectedTab = MutableStateFlow("overall")
     val selectedTab: StateFlow<String> = _selectedTab.asStateFlow()

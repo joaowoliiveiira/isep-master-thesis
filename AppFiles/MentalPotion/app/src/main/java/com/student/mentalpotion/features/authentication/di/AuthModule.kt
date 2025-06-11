@@ -11,6 +11,7 @@ import com.student.mentalpotion.features.authentication.domain.usecase.RegisterU
 import com.student.mentalpotion.features.authentication.domain.repository.FirebaseAuthService
 import com.student.mentalpotion.features.authentication.data.service.FirebaseAuthServiceImpl
 import com.student.mentalpotion.features.authentication.domain.repository.AuthAccountRepository
+import com.student.mentalpotion.features.authentication.domain.usecase.CheckSessionUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,4 +53,9 @@ object AuthModule {
     fun provideLogoutUseCase(
         repository: AuthAccountRepository
     ): LogoutUseCase = LogoutUseCase(repository)
+
+    @Provides
+    fun provideCheckSessionUseCase(
+        repository: AuthAccountRepository
+    ): CheckSessionUseCase = CheckSessionUseCase(repository)
 }
