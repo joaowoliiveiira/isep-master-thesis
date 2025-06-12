@@ -19,26 +19,34 @@ class LoginViewModel @Inject constructor(
     var email by mutableStateOf("")
     var password by mutableStateOf("")
 
-    private val _loginState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
+    private val _loginState = MutableStateFlow(LoginUiState())
     val loginState: StateFlow<LoginUiState> = _loginState
 
     fun onLoginClick() {
         if (email.isBlank() || password.isBlank()) {
-            _loginState.value = LoginUiState.Error("Email and password must not be empty")
+            _loginState.value = _loginState.value.copy(error = "Email and password must not be empty")
             return
         }
 
         viewModelScope.launch {
-            _loginState.value = LoginUiState.Loading
+            _loginState.value = _loginState.value.copy(isLoading = true, error = null)
 
             when (val result = loginUseCase(email, password)) {
-                is Result.Success -> _loginState.value = LoginUiState.Success(result.data)
-                is Result.Error -> _loginState.value = LoginUiState.Error(result.error.message)
+                is Result.Success -> {
+                    _loginState.value = LoginUiState(user = result.data)
+                }
+
+                is Result.Error -> {
+                    _loginState.value = _loginState.value.copy(
+                        isLoading = false,
+                        error = result.error.message
+                    )
+                }
             }
         }
     }
 
-    fun resetUiState() {
-        _loginState.value = LoginUiState.Idle
+    fun resetState() {
+        _loginState.value = LoginUiState()
     }
 }

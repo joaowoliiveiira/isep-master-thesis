@@ -12,6 +12,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,7 +41,6 @@ fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
     onRegisterSuccess: (RegisteredUser) -> Unit
 ) {
-    val registerState = viewModel.registerState
     val snackbarHostState = remember { SnackbarHostState() }
 
     var step by remember { mutableStateOf(RegisterStep.Welcome) }
@@ -42,17 +48,19 @@ fun RegisterScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    LaunchedEffect(registerState) {
-        when (registerState) {
-            is RegisterUiState.Success -> {
-                onRegisterSuccess(registerState.user)
-                viewModel.resetState()
-            }
-            is RegisterUiState.Error -> {
-                snackbarHostState.showSnackbar(registerState.message)
-                viewModel.resetState()
-            }
-            else -> {}
+    val uiState by viewModel.registerState.collectAsState()
+
+    LaunchedEffect(uiState.user) {
+        uiState.user?.let {
+            onRegisterSuccess(it)
+            viewModel.resetState()
+        }
+    }
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.resetState()
         }
     }
 
@@ -92,7 +100,7 @@ fun RegisterScreen(
                 }
             )
 
-            if (registerState is RegisterUiState.Loading) {
+            if (uiState.isLoading) {
                 Spacer(modifier = Modifier.height(24.dp))
                 CircularProgressIndicator(color = Color.White)
             }

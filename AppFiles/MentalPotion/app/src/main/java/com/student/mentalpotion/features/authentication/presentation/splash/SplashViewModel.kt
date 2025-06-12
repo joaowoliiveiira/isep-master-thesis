@@ -18,7 +18,7 @@ class SplashViewModel @Inject constructor(
     private val checkSessionUseCase: CheckSessionUseCase
 ) : ViewModel() {
 
-    private val _splashState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
+    private val _splashState = MutableStateFlow(SplashUiState())
     val splashState: StateFlow<SplashUiState> = _splashState
 
     init {
@@ -29,10 +29,14 @@ class SplashViewModel @Inject constructor(
 
     private suspend fun checkSession() {
         val result = checkSessionUseCase()
-        _splashState.value = if (result is Result.Success) {
-            SplashUiState.NavigateToMain
-        } else {
-            SplashUiState.NavigateToAuth
-        }
+        _splashState.value = SplashUiState(
+            isLoading = false,
+            navigateToMain = result is Result.Success,
+            navigateToAuth = result is Result.Error
+        )
+    }
+
+    fun resetState() {
+        _splashState.value = SplashUiState()
     }
 }

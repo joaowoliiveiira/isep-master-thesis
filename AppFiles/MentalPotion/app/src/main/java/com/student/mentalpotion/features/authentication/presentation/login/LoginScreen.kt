@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -36,17 +37,21 @@ fun LoginScreen(
     onLoginSuccess: (AuthUser) -> Unit,
     navController: NavController
 ) {
-    val loginState = viewModel.loginState
     var passwordVisible by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val uiState by viewModel.loginState.collectAsState()
 
-    LaunchedEffect(loginState) {
-        if (loginState is LoginUiState.Success) {
-            onLoginSuccess(loginState.user)
-            viewModel.resetUiState()
-        } else if (loginState is LoginUiState.Error) {
-            snackbarHostState.showSnackbar(loginState.message)
-            viewModel.resetUiState()
+    LaunchedEffect(uiState.user) {
+        uiState.user?.let {
+            onLoginSuccess(it)
+            viewModel.resetState()
+        }
+    }
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.resetState()
         }
     }
 
@@ -58,7 +63,8 @@ fun LoginScreen(
                     containerColor = Color(0xFF7F0000),
                     contentColor = Color.White
                 )
-            } },
+            }
+        },
         containerColor = Color(0xFF161118)
     ) { padding ->
         Box(
@@ -73,19 +79,17 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
+                // Headline & Register
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Headline
                     Text(
                         text = "Login",
                         fontSize = 30.sp,
                         color = Color.White,
                         textAlign = TextAlign.Center
                     )
-
-                    // Register text
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -107,12 +111,12 @@ fun LoginScreen(
                     }
                 }
 
+                // Inputs
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    // Email text field
                     OutlinedTextField(
                         value = viewModel.email,
                         onValueChange = { viewModel.email = it },
@@ -131,7 +135,6 @@ fun LoginScreen(
                         )
                     )
 
-                    // Password text field
                     OutlinedTextField(
                         value = viewModel.password,
                         onValueChange = { viewModel.password = it },
@@ -139,13 +142,11 @@ fun LoginScreen(
                         placeholder = { Text("Password") },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         trailingIcon = {
-                            val image = if (passwordVisible)
-                                Icons.Default.Visibility
-                            else
-                                Icons.Default.VisibilityOff
-
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
+                                Icon(
+                                    imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                    contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                                )
                             }
                         },
                         keyboardOptions = KeyboardOptions(
@@ -169,11 +170,12 @@ fun LoginScreen(
                         modifier = Modifier
                             .align(Alignment.Start)
                             .clickable {
-                                // TODO: Navigate to ForgotPassword screen later
+                                // TODO: Add navigation to ForgotPassword
                             }
                     )
                 }
 
+                // Login Button
                 Button(
                     onClick = { viewModel.onLoginClick() },
                     modifier = Modifier
@@ -188,7 +190,7 @@ fun LoginScreen(
                 }
             }
 
-            if (loginState is LoginUiState.Loading) {
+            if (uiState.isLoading) {
                 Box(
                     Modifier
                         .fillMaxSize()

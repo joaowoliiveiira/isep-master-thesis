@@ -1,7 +1,7 @@
 package com.student.mentalpotion.features.authentication.presentation.splash
 
-sealed class SplashUiState {
-    object Loading : SplashUiState()
-    object NavigateToAuth : SplashUiState()
-    object NavigateToMain : SplashUiState()
-}
+data class SplashUiState(
+    val isLoading: Boolean = true,
+    val navigateToMain: Boolean = false,
+    val navigateToAuth: Boolean = false
+)

@@ -11,6 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,17 +30,23 @@ fun SplashScreen(
     navController: NavController,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
-    val splashState = viewModel.splashState
+    val splashState by viewModel.splashState.collectAsState()
 
-    // Navigation handling
-    LaunchedEffect(splashState == SplashUiState.NavigateToAuth) {
-        navController.navigate("auth") {
-            popUpTo(0) { inclusive = true } // Clear everything
+    LaunchedEffect(splashState.navigateToMain) {
+        if (splashState.navigateToMain) {
+            navController.navigate("main") {
+                popUpTo(0) { inclusive = true }
+            }
+            viewModel.resetState()
         }
     }
-    LaunchedEffect(splashState == SplashUiState.NavigateToMain) {
-        navController.navigate("main") {
-            popUpTo(0) { inclusive = true }
+
+    LaunchedEffect(splashState.navigateToAuth) {
+        if (splashState.navigateToAuth) {
+            navController.navigate("auth") {
+                popUpTo(0) { inclusive = true }
+            }
+            viewModel.resetState()
         }
     }
 
@@ -53,7 +64,10 @@ fun SplashScreen(
                 modifier = Modifier.size(96.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
-            CircularProgressIndicator(color = Color.White)
+
+            if (splashState.isLoading) {
+                CircularProgressIndicator(color = Color.White)
+            }
         }
     }
 }
