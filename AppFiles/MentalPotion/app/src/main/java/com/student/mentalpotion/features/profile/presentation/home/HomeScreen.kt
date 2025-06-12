@@ -18,28 +18,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.student.mentalpotion.R
 
 @Composable
 fun HomeScreen(
-    navController: NavHostController = rememberNavController(),
-    homeViewModel: HomeViewModel = hiltViewModel()
+    navController: NavHostController,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    var showDialog by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Collect logout event
+    LaunchedEffect(Unit) {
+        viewModel.logoutEvent.collect {
+            snackbarHostState.showSnackbar("You have been logged out")
+            navController.navigate("auth") {
+                popUpTo("main") { inclusive = true }
+            }
+        }
+    }
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = Color(0xFF333333),
-                    contentColor = Color.White
-                )
-            }
-        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Color(0xFF161118)
     ) { padding ->
         Column(
@@ -56,37 +59,25 @@ fun HomeScreen(
             Button(onClick = { showDialog = true }) {
                 Text("Logout")
             }
-        }
 
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text("Confirm Logout") },
-                text = { Text("Are you sure you want to log out?") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        homeViewModel.logout()
-                        showDialog = false
-
-                        // Navigate and show snackbar
-                        navController.navigate("auth") {
-                            popUpTo("main") { inclusive = true }
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text("Confirm Logout") },
+                    text = { Text("Are you sure you want to log out?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showDialog = false
+                            viewModel.logout()
+                        }) { Text("Yes") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDialog = false }) {
+                            Text("Cancel")
                         }
-
-                        /*
-                        LaunchedEffect(Unit) {
-                            snackbarHostState.showSnackbar("You have been logged out")
-                        }*/
-                    }) {
-                        Text("Yes")
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDialog = false }) {
-                        Text("Cancel")
-                    }
-                }
-            )
+                )
+            }
         }
     }
 }

@@ -45,6 +45,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Handles all app-level navigation (splash, auth, main app sections).
+ */
 @Composable
 fun RootNavHost(navController: NavHostController) {
     NavHost(
@@ -92,7 +95,7 @@ fun RootNavHost(navController: NavHostController) {
             }
         }
 
-        // Main app flow
+        // Main app flow, which now has the bottom nav bar
         navigation(startDestination = AppDestinations.Home.route, route = "main") {
             composable(AppDestinations.Home.route) {
                 MainScaffold(
@@ -112,7 +115,7 @@ fun RootNavHost(navController: NavHostController) {
 }
 
 /**
- * MainScaffold manages the bottom bar and main in-app screens.
+ * Manages/hosts the bottom bar + main in-app screens.
  */
 @Composable
 fun MainScaffold(
@@ -140,10 +143,15 @@ fun MainScaffold(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(AppDestinations.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    navController = parentNavController // this is the rootNavController from MainActivity
+                )
             }
+
             composable(AppDestinations.Topics.route) {
-                TopicListScreen(navController = innerNavController)
+                TopicListScreen(
+                    navController = innerNavController
+                )
             }
         }
     }

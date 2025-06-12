@@ -13,7 +13,5 @@ class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
-    fun logout() {
-        logoutUseCase()
-    }
+
 }

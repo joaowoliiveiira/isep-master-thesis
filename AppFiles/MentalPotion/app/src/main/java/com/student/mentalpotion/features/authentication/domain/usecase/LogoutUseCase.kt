@@ -3,9 +3,9 @@ package com.student.mentalpotion.features.authentication.domain.usecase
 import com.student.mentalpotion.features.authentication.domain.repository.AuthAccountRepository
 
 class LogoutUseCase(
-    private val repository: AuthAccountRepository
+    private val authRepository: AuthAccountRepository
 ) {
-    operator fun invoke() {
-        repository.logout()
+    suspend operator fun invoke() {
+        authRepository.logout()
     }
 }
