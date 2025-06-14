@@ -2,6 +2,8 @@ package com.student.mentalpotion.features.authentication.presentation.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.student.mentalpotion.core.util.ApiError
+import com.student.mentalpotion.core.util.NetworkError
 import com.student.mentalpotion.core.util.Result
 import com.student.mentalpotion.features.authentication.domain.usecase.RegisterUseCase
 import com.student.mentalpotion.features.authentication.presentation.login.LoginUiState
@@ -13,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
 ) : ViewModel() {
 
     private val _registerState = MutableStateFlow(RegisterUiState())
@@ -21,7 +23,9 @@ class RegisterViewModel @Inject constructor(
 
     fun register(email: String, password: String, username: String, avatarId: String? = null) {
         if (email.isBlank() || password.isBlank() || username.isBlank()) {
-            _registerState.value = _registerState.value.copy(error = "Email, username, and password cannot be empty")
+            _registerState.value = _registerState.value.copy(
+                error = NetworkError(ApiError.UnknownError, Throwable("Missing input"))
+            )
             return
         }
 
@@ -32,10 +36,12 @@ class RegisterViewModel @Inject constructor(
                 is Result.Success -> {
                     _registerState.value = RegisterUiState(user = result.data)
                 }
+
                 is Result.Error -> {
                     _registerState.value = _registerState.value.copy(
                         isLoading = false,
-                        error = result.error.message)
+                        error = result.error
+                    )
                 }
             }
         }

@@ -5,10 +5,17 @@ data class NetworkError (
     val t: Throwable
 ) : Error {
     override val message: String get() = error.message
+
+    companion object {
+        fun fromException(e: Exception): NetworkError {
+            return NetworkError(ApiError.UnknownError, e)
+        }
+    }
 }
 
 enum class ApiError(val message: String){
     NetworkError("Network Error"),
     UnknownResponse("Unknown Response"),
-    UnknownError("Unknown Error")
+    UnknownError("Unknown Error"),
+    EmailAlreadyInUse("Email is already in use")
 }

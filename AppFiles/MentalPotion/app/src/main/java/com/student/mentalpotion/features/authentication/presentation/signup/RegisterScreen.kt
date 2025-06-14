@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -19,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +33,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.student.mentalpotion.R
 import com.student.mentalpotion.core.domain.model.RegisteredUser
+import com.student.mentalpotion.core.util.ApiError
+import com.student.mentalpotion.core.util.NetworkError
 import kotlinx.coroutines.delay
 
 private const val MessageDelay = 400L
@@ -39,17 +43,21 @@ private const val NextStepDelay = 600L
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
-    onRegisterSuccess: (RegisteredUser) -> Unit
+    onRegisterSuccess: (RegisteredUser) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var step by remember { mutableStateOf(RegisterStep.Welcome) }
+    var step by remember { mutableStateOf(RegisterStep.AskEmail) }
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val uiState by viewModel.registerState.collectAsState()
+    var inputEnabled by remember { mutableStateOf(true) }
 
+    val uiState by viewModel.registerState.collectAsState()
+    val messages = remember { mutableStateListOf<@Composable () -> Unit>() }
+
+    // On successful registration
     LaunchedEffect(uiState.user) {
         uiState.user?.let {
             onRegisterSuccess(it)
@@ -58,11 +66,22 @@ fun RegisterScreen(
     }
 
     LaunchedEffect(uiState.error) {
-        uiState.error?.let {
-            snackbarHostState.showSnackbar(it)
+        uiState.error?.let { errorMessage ->
+            inputEnabled = true
+
+            if (errorMessage.error == ApiError.EmailAlreadyInUse) {
+                messages.add {
+                    ChatBubble("Hmm, looks like this email is already in use. Try a different one.")
+                }
+                step = RegisterStep.AskEmail
+            } else {
+                snackbarHostState.showSnackbar(errorMessage.message)
+            }
+
             viewModel.resetState()
         }
     }
+
 
     Scaffold(
         snackbarHost = {
@@ -85,17 +104,39 @@ fun RegisterScreen(
             AvatarWithName()
             Spacer(modifier = Modifier.height(24.dp))
 
-            AnimatedStep(step, email, username, password,
-                onEmailEntered = {
-                    email = it
+            // ✅ Show chat history
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                items(messages.size) { index ->
+                    messages[index].invoke()
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+
+            // ✅ Input flow logic
+            AnimatedStep(
+                step = step,
+                email = email,
+                username = username,
+                password = password,
+                inputEnabled = inputEnabled,
+                messages = messages,
+                onEmailEntered = { input ->
+                    if (!inputEnabled) return@AnimatedStep
+                    inputEnabled = false
+                    email = input
+                    messages.add { ChatBubble(input, isUser = true) }
                     step = RegisterStep.AskUsername
                 },
-                onUsernameEntered = {
-                    username = it
+                onUsernameEntered = { input ->
+                    if (!inputEnabled) return@AnimatedStep
+                    username = input
+                    messages.add { ChatBubble(input, isUser = true) }
                     step = RegisterStep.AskPassword
                 },
-                onPasswordEntered = {
-                    password = it
+                onPasswordEntered = { input ->
+                    if (!inputEnabled) return@AnimatedStep
+                    password = input
+                    messages.add { ChatBubble("••••••", isUser = true) }
                     viewModel.register(email, password, username)
                 }
             )
@@ -109,6 +150,10 @@ fun RegisterScreen(
 }
 
 
+enum class RegisterStep {
+    AskEmail, AskUsername, AskPassword, AskAvatar
+}
+
 @Composable
 fun AnimatedStep(
     step: RegisterStep,
@@ -117,29 +162,38 @@ fun AnimatedStep(
     password: String,
     onEmailEntered: (String) -> Unit,
     onUsernameEntered: (String) -> Unit,
-    onPasswordEntered: (String) -> Unit
+    onPasswordEntered: (String) -> Unit,
+    messages: SnapshotStateList<@Composable () -> Unit>,
+    inputEnabled: Boolean
 ) {
     when (step) {
-        RegisterStep.Welcome -> {
-            AnimatedMessage("Hello! I'm Meowski. Welcome to MentalPotion!") {
-                onEmailEntered("") // advances flow
-            }
-        }
-
         RegisterStep.AskEmail -> {
-            AnimatedMessage("Let’s get your account set up. What’s your email?")
-            AnimatedInputField("Email", onNext = onEmailEntered)
+            LaunchedEffect(Unit) {
+                delay(MessageDelay)
+                messages.add { ChatBubble("Hello! I'm Meowski. Welcome to MentalPotion!") }
+                delay(NextStepDelay)
+                messages.add { ChatBubble("Let’s get your account set up. What’s your email?") }
+            }
+            AnimatedInputField("Email", onNext = onEmailEntered, enabled = inputEnabled)
         }
 
         RegisterStep.AskUsername -> {
-            AnimatedMessage("Nice! And what should we call you?")
-            AnimatedInputField("Username", onNext = onUsernameEntered)
+            LaunchedEffect(Unit) {
+                delay(NextStepDelay)
+                messages.add { ChatBubble("Nice! And what should we call you?") }
+            }
+            AnimatedInputField("Username", onNext = onUsernameEntered, enabled = inputEnabled)
         }
 
         RegisterStep.AskPassword -> {
-            AnimatedMessage("Last step! Choose a secure password.")
-            AnimatedInputField("Password", password = true, onNext = onPasswordEntered)
+            LaunchedEffect(Unit) {
+                delay(NextStepDelay)
+                messages.add { ChatBubble("Last step! Choose a secure password.") }
+            }
+            AnimatedInputField("Password", password = true, onNext = onPasswordEntered, enabled = inputEnabled)
         }
+
+        RegisterStep.AskAvatar -> TODO()
     }
 }
 
@@ -167,7 +221,8 @@ fun AnimatedMessage(text: String, onShown: (() -> Unit)? = null) {
 fun AnimatedInputField(
     label: String,
     password: Boolean = false,
-    onNext: (String) -> Unit
+    onNext: (String) -> Unit,
+    enabled: Boolean = true
 ) {
     var visible by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
@@ -190,22 +245,19 @@ fun AnimatedInputField(
                     .fillMaxWidth()
                     .padding(top = 12.dp),
                 singleLine = true,
+                enabled = enabled,
+                isError = label == "Email" && text.isNotBlank() && !text.contains("@"),
                 visualTransformation = if (password) PasswordVisualTransformation() else VisualTransformation.None
             )
             Button(
                 onClick = { onNext(text) },
                 modifier = Modifier.padding(top = 12.dp),
-                enabled = text.isNotBlank()
+                enabled = text.isNotBlank() && enabled && (label != "Email" || text.contains("@"))
             ) {
                 Text("Next")
             }
         }
     }
-}
-
-
-enum class RegisterStep {
-    Welcome, AskEmail, AskUsername, AskPassword
 }
 
 @Composable
@@ -238,20 +290,24 @@ fun AvatarWithName() {
 
 @Composable
 fun ChatBubble(text: String, isUser: Boolean = false) {
-    Surface(
-        color = Color(0xFF5D4A43),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Color(0xFFFFD7A5)),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = if (isUser) 48.dp else 0.dp)
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
     ) {
-        Text(
-            text = text,
-            color = Color.White,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(16.dp)
-        )
+        Surface(
+            color = if (isUser) Color(0xFF6A5ACD) else Color(0xFF5D4A43),
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(1.dp, Color(0xFFFFD7A5)),
+            modifier = Modifier
+                .widthIn(max = 300.dp)
+        ) {
+            Text(
+                text = text,
+                color = Color.White,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
     }
 }
 

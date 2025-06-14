@@ -2,7 +2,9 @@ package com.student.mentalpotion.features.authentication.data.service
 
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.auth
+import com.student.mentalpotion.core.util.ApiError
 import com.student.mentalpotion.core.util.Result
 import com.student.mentalpotion.core.util.NetworkError
 import com.student.mentalpotion.core.util.runFirebaseCatching
@@ -23,10 +25,14 @@ class FirebaseAuthServiceImpl(
     }
 
     override suspend fun register(email: String, password: String): Result<AuthUser, NetworkError> {
-        return runFirebaseCatching {
+        return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            val user = result.user ?: throw Exception("User is null")
-            AuthUser(user.uid, user.email ?: "")
+            val firebaseUser = result.user ?: throw Exception("User is null")
+            Result.Success(AuthUser(firebaseUser.uid, firebaseUser.email ?: ""))
+        } catch (e: FirebaseAuthUserCollisionException) {
+            Result.Error(NetworkError(ApiError.EmailAlreadyInUse, e))
+        } catch (e: Exception) {
+            Result.Error(NetworkError(ApiError.UnknownError, e))
         }
     }
 
