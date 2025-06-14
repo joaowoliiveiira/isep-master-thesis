@@ -22,7 +22,7 @@ import com.student.mentalpotion.features.authentication.presentation.signup.Regi
 import com.student.mentalpotion.features.authentication.presentation.signup.RegisterViewModel
 import com.student.mentalpotion.features.authentication.presentation.splash.SplashScreen
 import com.student.mentalpotion.features.authentication.presentation.splash.SplashViewModel
-import com.student.mentalpotion.features.profile.presentation.home.HomeScreen
+import com.student.mentalpotion.features.home.presentation.HomeScreen
 import com.student.mentalpotion.ui.components.BottomNavBar
 import com.student.mentalpotion.ui.theme.MentalPotionTheme
 import dagger.hilt.android.AndroidEntryPoint

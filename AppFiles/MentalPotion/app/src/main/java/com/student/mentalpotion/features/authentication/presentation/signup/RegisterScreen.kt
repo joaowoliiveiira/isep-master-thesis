@@ -35,6 +35,7 @@ import com.student.mentalpotion.R
 import com.student.mentalpotion.core.domain.model.RegisteredUser
 import com.student.mentalpotion.core.util.ApiError
 import com.student.mentalpotion.core.util.NetworkError
+import com.student.mentalpotion.ui.components.AvatarPickerDialog
 import kotlinx.coroutines.delay
 
 private const val MessageDelay = 400L
@@ -48,9 +49,15 @@ fun RegisterScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     var step by remember { mutableStateOf(RegisterStep.AskEmail) }
+
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    var emailInput by remember { mutableStateOf("") }
+    var usernameInput by remember { mutableStateOf("") }
+    var passwordInput by remember { mutableStateOf("") }
+
 
     var inputEnabled by remember { mutableStateOf(true) }
 
@@ -104,7 +111,7 @@ fun RegisterScreen(
             AvatarWithName()
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ✅ Show chat history
+            // Show chat history
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(messages.size) { index ->
                     messages[index].invoke()
@@ -112,34 +119,40 @@ fun RegisterScreen(
                 }
             }
 
-            // ✅ Input flow logic
+            // Input flow logic
             AnimatedStep(
                 step = step,
                 email = email,
                 username = username,
                 password = password,
-                inputEnabled = inputEnabled,
+                emailInput = emailInput,
+                onEmailInputChange = { emailInput = it },
+                usernameInput = usernameInput,
+                onUsernameInputChange = { usernameInput = it },
+                passwordInput = passwordInput,
+                onPasswordInputChange = { passwordInput = it },
                 messages = messages,
                 onEmailEntered = { input ->
-                    if (!inputEnabled) return@AnimatedStep
-                    inputEnabled = false
                     email = input
                     messages.add { ChatBubble(input, isUser = true) }
                     step = RegisterStep.AskUsername
                 },
                 onUsernameEntered = { input ->
-                    if (!inputEnabled) return@AnimatedStep
                     username = input
                     messages.add { ChatBubble(input, isUser = true) }
                     step = RegisterStep.AskPassword
                 },
                 onPasswordEntered = { input ->
-                    if (!inputEnabled) return@AnimatedStep
                     password = input
                     messages.add { ChatBubble("••••••", isUser = true) }
-                    viewModel.register(email, password, username)
+                    step = RegisterStep.AskAvatar
+                },
+                onAvatarEntered = { avatarId ->
+                    messages.add { ChatBubble("✅ Avatar selected: $avatarId", isUser = true) }
+                    viewModel.register(email, password, username, avatarId)
                 }
             )
+
 
             if (uiState.isLoading) {
                 Spacer(modifier = Modifier.height(24.dp))
@@ -163,8 +176,14 @@ fun AnimatedStep(
     onEmailEntered: (String) -> Unit,
     onUsernameEntered: (String) -> Unit,
     onPasswordEntered: (String) -> Unit,
+    onAvatarEntered: (String) -> Unit,
     messages: SnapshotStateList<@Composable () -> Unit>,
-    inputEnabled: Boolean
+    emailInput: String,
+    onEmailInputChange: (String) -> Unit,
+    usernameInput: String,
+    onUsernameInputChange: (String) -> Unit,
+    passwordInput: String,
+    onPasswordInputChange: (String) -> Unit,
 ) {
     when (step) {
         RegisterStep.AskEmail -> {
@@ -174,7 +193,14 @@ fun AnimatedStep(
                 delay(NextStepDelay)
                 messages.add { ChatBubble("Let’s get your account set up. What’s your email?") }
             }
-            AnimatedInputField("Email", onNext = onEmailEntered, enabled = inputEnabled)
+            AnimatedInputField(
+                label = "Email",
+                text = emailInput,
+                onTextChange = onEmailInputChange,
+                onNext = {
+                    onEmailEntered(emailInput)
+                }
+            )
         }
 
         RegisterStep.AskUsername -> {
@@ -182,7 +208,14 @@ fun AnimatedStep(
                 delay(NextStepDelay)
                 messages.add { ChatBubble("Nice! And what should we call you?") }
             }
-            AnimatedInputField("Username", onNext = onUsernameEntered, enabled = inputEnabled)
+            AnimatedInputField(
+                label = "Username",
+                text = usernameInput,
+                onTextChange = onUsernameInputChange,
+                onNext = {
+                    onUsernameEntered(usernameInput)
+                }
+            )
         }
 
         RegisterStep.AskPassword -> {
@@ -190,13 +223,40 @@ fun AnimatedStep(
                 delay(NextStepDelay)
                 messages.add { ChatBubble("Last step! Choose a secure password.") }
             }
-            AnimatedInputField("Password", password = true, onNext = onPasswordEntered, enabled = inputEnabled)
+            AnimatedInputField(
+                label = "Password",
+                password = true,
+                text = passwordInput,
+                onTextChange = onPasswordInputChange,
+                onNext = {
+                    onPasswordEntered(passwordInput)
+                }
+            )
         }
 
-        RegisterStep.AskAvatar -> TODO()
+        RegisterStep.AskAvatar -> {
+            var showDialog by remember { mutableStateOf(true) }
+
+            LaunchedEffect(Unit) {
+                delay(NextStepDelay)
+                messages.add { ChatBubble("Looking good! Pick an avatar to represent you.") }
+            }
+
+            if (showDialog) {
+                AvatarPickerDialog(
+                    onDismiss = { showDialog = false },
+                    onAvatarSelected = { avatarId ->
+                        showDialog = false
+                        messages.add {
+                            ChatBubble("Awesome choice!", isUser = false)
+                        }
+                        onAvatarEntered(avatarId)
+                    }
+                )
+            }
+        }
     }
 }
-
 
 @Composable
 fun AnimatedMessage(text: String, onShown: (() -> Unit)? = null) {
@@ -220,14 +280,14 @@ fun AnimatedMessage(text: String, onShown: (() -> Unit)? = null) {
 @Composable
 fun AnimatedInputField(
     label: String,
+    text: String,
+    onTextChange: (String) -> Unit,
     password: Boolean = false,
-    onNext: (String) -> Unit,
-    enabled: Boolean = true
+    onNext: () -> Unit
 ) {
     var visible by remember { mutableStateOf(false) }
-    var text by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(label) {
         delay(NextStepDelay)
         visible = true
     }
@@ -239,26 +299,27 @@ fun AnimatedInputField(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             OutlinedTextField(
                 value = text,
-                onValueChange = { text = it },
+                onValueChange = onTextChange,
                 label = { Text(label) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
                 singleLine = true,
-                enabled = enabled,
                 isError = label == "Email" && text.isNotBlank() && !text.contains("@"),
                 visualTransformation = if (password) PasswordVisualTransformation() else VisualTransformation.None
             )
             Button(
-                onClick = { onNext(text) },
+                onClick = onNext,
                 modifier = Modifier.padding(top = 12.dp),
-                enabled = text.isNotBlank() && enabled && (label != "Email" || text.contains("@"))
+                enabled = text.isNotBlank() && (label != "Email" || text.contains("@"))
             ) {
                 Text("Next")
             }
         }
     }
 }
+
+
 
 @Composable
 fun AvatarWithName() {
